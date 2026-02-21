@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">السبيل</string>
+    
+    <!-- Prayer -->
+    <string name="fajr">الفجر</string>
+    <string name="fajr_special">الصلاة خير من النوم</string>
+    <string name="sunrise">الشروق</string>
+    <string name="dhuhr">الظهر</string>
+    <string name="asr">العصر</string>
+    <string name="maghrib">المغرب</string>
+    <string name="isha">العشاء</string>
+    <string name="imsak">الإمساك</string>
+    <string name="next_prayer">الصلاة القادمة</string>
+    <string name="time_left">الوقت المتبقي</string>
+    
+    <!-- Azkar -->
+    <string name="morning_azkar">أذكار الصباح</string>
+    <string name="evening_azkar">أذكار المساء</string>
+    <string name="after_prayer_azkar">أذكار بعد الصلاة</string>
+    <string name="tasbeeh">تسابيح</string>
+    <string name="sleeping_azkar">أذكار النوم</string>
+    <string name="waking_up_azkar">أذكار الاستيقاظ</string>
+    <string name="quranic_duas">أدعية قرآنية</string>
+    <string name="prophets_duas">أدعية الأنبياء</string>
+    <string name="custom_duas">أدعيتي الخاصة</string>
+    
+    <!-- Compass -->
+    <string name="qibla_direction">اتجاه القبلة</string>
+    <string name="degree">درجة</string>
+    <string name="facing_qibla">متجه نحو القبلة</string>
+    <string name="rotate_device">قم بتدوير الجهاز</string>
+    <string name="calibrate">قم بمعايرة البوصلة</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="notifications_title">الإشعارات</string>
+    <string name="adhkar_reminders_title">تذكير الأذكار</string>
+    <string name="general_title">عام</string>
+    <string name="location_label">الموقع</string>
+    <string name="auto_detect">تحديد تلقائي</string>
+    <string name="language_label">اللغة</string>
+    <string name="test_adhan">اختبار صوت الأذان</string>
+    <string name="color_palette_title">ألوان التطبيق</string>
+    <string name="adhan_settings_title">إعدادات الأذان</string>
+    <string name="force_adhan_silent">التشغيل حتى في الوضع الصامت</string>
+    <string name="use_system_volume">استخدام مستوى صوت النظام</string>
+    <string name="use_default_volume">استخدام الصوت الافتراضي (75%)</string>
+    <string name="remind_with_sound">تذكير مع صوت (منبه)</string>
+    <string name="qiyam_time_label">وقت قيام الليل</string>
+    <string name="default_time">تلقائي (ساعة قبل الفجر)</string>
+    <string name="test_alert_title">اختبار التنبيه البصري</string>
+    <string name="hijri_adjustment_title">تعديل التاريخ الهجري</string>
+    <string name="hijri_adjustment_desc">اختر عدد الأيام التي تريد إضافتها أو طرحها لمطابقة تقويمكم المحلي.</string>
+    <string name="hijri_minus_two">-2</string>
+    <string name="hijri_minus_one">-1</string>
+    <string name="hijri_zero">0</string>
+    <string name="hijri_plus_one">+1</string>
+    <string name="hijri_plus_two">+2</string>
+    
+    <!-- Common -->
+    <string name="loading">جاري التحميل…</string>
+    <string name="locating">جاري تحديد الموقع…</string>
+    <string name="location_unavailable">الموقع غير متاح</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="back_button">رجوع</string>
+    
+    <!-- Quran Index -->
+    <string name="tab_surah">السور</string>
+    <string name="tab_juzz">الأجزاء</string>
+    <string name="tab_bookmarks">الفواصل</string>
+    <string name="page_num">ص. %d</string>
+    <string name="juzz_num">الجزء %d</string>
+    <string name="index_label">الفهرس</string>
+    
+    <!-- Bookmark Manager -->
+    <string name="create_bookmark">إنشاء فاصلة</string>
+    <string name="page_label">الصفحة: %d</string>
+    <string name="surah_label">السورة: %1$s (%2$d)</string>
+    <string name="ayah_label">الآية: %d</string>
+    <string name="bookmark_name_hint">اسم الفاصلة (اختياري)</string>
+    <string name="add_bookmark">إضافة فاصلة</string>
+    <string name="delete_bookmark">حذف الفاصلة</string>
+    <string name="go_to_bookmark">الذهاب إلى الفاصلة</string>
+    
+    <!-- Settings Sections -->
+    <string name="bookmarks_title">الفواصل</string>
+    <string name="tafseer_title">التفسير</string>
+    <string name="manage_bookmarks">إدارة الفواصل</string>
+    
+    <!-- Tafseer Names -->
+    <string name="tafseer_saddi">تفسير السعدي</string>
+    <string name="tafseer_ibn_kathir">تفسير ابن كثير</string>
+    
+    <!-- Mushaf Screen -->
+    <string name="page_simple_label">صفحة %d</string>
+    <string name="surah_ayah_format">سورة %1$s - آية %2$d</string>
+    
+    <!-- Extra -->
+    <string name="surah_ayah_num">سورة %1$d، آية %2$d</string>
+    <string name="qiyam_adhkar">قيام الليل</string>
+    <string name="azkar_title">الأذكار</string>
+    <string name="daily_ayah">آية اليوم</string>
+    <string name="daily_douaa">دعاء اليوم</string>
+    <string name="daily_hadith">حديث اليوم</string>
+
+    <!-- Notification Strings -->
+    <string name="notification_prayer_title">حان وقت %s</string>
+    <string name="notification_prayer_body">حان الآن موعد صلاة %s</string>
+    <string name="notification_adhkar_body">حان وقت الأذكار اليومية</string>
+    <string name="notification_qiyam_title">قيام الليل</string>
+    <string name="notification_qiyam_body">حان وقت صلاة القيام</string>
+    <string name="stop_sound">إيقاف</string>
+    <string name="overlay_permission_title">الإذن مطلوب</string>
+    <string name="overlay_permission_desc">لإظهار تنبيه قيام الليل أثناء إغلاق التطبيق، يرجى تفعيل إذن \'الظهور فوق التطبيقات الأخرى\' من إعدادات النظام.</string>
+    <string name="open_settings">فتح الإعدادات</string>
+</resources>
