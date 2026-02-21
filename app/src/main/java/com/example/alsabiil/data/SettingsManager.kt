@@ -38,6 +38,7 @@ class SettingsManager(private val context: Context) {
         val HIJRI_OFFSET = intPreferencesKey("hijri_offset")
 
         val LAST_READ_PAGE = intPreferencesKey("last_read_page")
+        val FIRST_LAUNCH_COMPLETED = booleanPreferencesKey("first_launch_completed")
 
         // Additional bookmark keys for specific surahs/ayahs
         val BOOKMARKS_KEY = stringPreferencesKey("bookmarks")
@@ -63,7 +64,8 @@ class SettingsManager(private val context: Context) {
             adhkarSoundEnabled = preferences[ADHKAR_SOUND_ENABLED] ?: false,
             qiyamTime = preferences[QIYAM_TIME] ?: "DEFAULT",
             hijriOffset = preferences[HIJRI_OFFSET] ?: 0,
-            lastReadPage = preferences[LAST_READ_PAGE] ?: 1
+            lastReadPage = preferences[LAST_READ_PAGE] ?: 1,
+            firstLaunchCompleted = preferences[FIRST_LAUNCH_COMPLETED] ?: false
         )
     }
 
@@ -139,6 +141,12 @@ class SettingsManager(private val context: Context) {
         }
     }
 
+    suspend fun updateFirstLaunchCompleted(completed: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[FIRST_LAUNCH_COMPLETED] = completed
+        }
+    }
+
     // Function to save bookmarks for specific surahs/ayahs
     suspend fun saveBookmark(bookmark: Bookmark) {
         context.dataStore.edit { settings ->
@@ -204,5 +212,6 @@ data class UserSettings(
     val adhkarSoundEnabled: Boolean,
     val qiyamTime: String,
     val hijriOffset: Int,
-    val lastReadPage: Int
+    val lastReadPage: Int,
+    val firstLaunchCompleted: Boolean
 )

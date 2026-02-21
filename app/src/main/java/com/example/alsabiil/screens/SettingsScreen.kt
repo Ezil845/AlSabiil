@@ -432,6 +432,29 @@ fun SettingsScreen(
                         }
                     }
                 }
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+                
+                item {
+                    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = { uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git") },
+                            modifier = Modifier.size(64.dp)
+                        ) {
+                            Icon(
+                                imageVector = Lucide.Github,
+                                contentDescription = "Open GitHub",
+                                tint = Color(0xFFa0b0a0),
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                    }
+                }
                 
                 item { Spacer(modifier = Modifier.height(40.dp)) }
             }

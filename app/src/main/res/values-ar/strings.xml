@@ -115,4 +115,10 @@
     <string name="overlay_permission_title">الإذن مطلوب</string>
     <string name="overlay_permission_desc">لإظهار تنبيه قيام الليل أثناء إغلاق التطبيق، يرجى تفعيل إذن \'الظهور فوق التطبيقات الأخرى\' من إعدادات النظام.</string>
     <string name="open_settings">فتح الإعدادات</string>
+    
+    <!-- Welcome Message -->
+    <string name="welcome_test_mode_title">مرحباً بك في السبيل</string>
+    <string name="welcome_test_mode_desc">شكراً لتثبيتك تطبيق السبيل! يرجى الملاحظة أن هذا التطبيق لا يزال في مرحلة تجريبية.\n\nإذا واجهت أي مشاكل، أو أردت تقديم ملاحظات، أو أردت المساهمة في التطوير، يمكنك العثور على مشروعنا المفتوح المصدر على منصة GitHub.</string>
+    <string name="open_github">فتح GitHub</string>
+    <string name="got_it">حسناً</string>
 </resources>

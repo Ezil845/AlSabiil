@@ -10,8 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.*
 import com.example.alsabiil.R
 import com.example.alsabiil.components.AyahCard
 import com.example.alsabiil.components.PrayerTimeCard
@@ -163,6 +167,59 @@ fun WelcomeScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
+        
         AyahCard(contentList = ayahContent)
+
+        // Show welcome overlay for first time users
+        if (userSettings?.firstLaunchCompleted == false) {
+            val uriHandler = LocalUriHandler.current
+            
+            AlertDialog(
+                onDismissRequest = { 
+                    // Prevent dismiss by tapping outside, force them to click "Got it"
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.welcome_test_mode_title),
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1A202C)
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.welcome_test_mode_desc),
+                        color = Color(0xFF4A5568)
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { 
+                            settingsViewModel.updateFirstLaunchCompleted()
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF70a080))
+                    ) {
+                        Text(text = stringResource(R.string.got_it), fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    IconButton(
+                        onClick = { 
+                            uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git")
+                            settingsViewModel.updateFirstLaunchCompleted()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Lucide.Github,
+                            contentDescription = stringResource(R.string.open_github),
+                            tint = Color(0xFF1E293B),
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                },
+                containerColor = Color.White,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                tonalElevation = 0.dp
+            )
+        }
     }
 }

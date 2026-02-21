@@ -170,6 +170,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun updateFirstLaunchCompleted() {
+        viewModelScope.launch {
+            settingsManager.updateFirstLaunchCompleted(true)
+        }
+    }
+
     fun saveBookmark(bookmark: Bookmark) {
         viewModelScope.launch {
             settingsManager.saveBookmark(bookmark)

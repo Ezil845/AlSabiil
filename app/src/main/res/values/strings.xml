@@ -116,4 +116,10 @@
     <string name="overlay_permission_title">Permission Required</string>
     <string name="overlay_permission_desc">To show the Qiyam Al-Layl alert while the app is closed, please enable \'Appear on top\' in system settings.</string>
     <string name="open_settings">Open Settings</string>
+    
+    <!-- Welcome Message -->
+    <string name="welcome_test_mode_title">Welcome to AlSabiil</string>
+    <string name="welcome_test_mode_desc">Thank you for installing AlSabiil! Please note that this app is currently in test mode.\n\nIf you encounter any issues, wish to provide feedback, or want to contribute to the development, you can find our open-source project on GitHub.</string>
+    <string name="open_github">Open GitHub</string>
+    <string name="got_it">Got it</string>
 </resources>
