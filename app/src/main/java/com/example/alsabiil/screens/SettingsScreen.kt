@@ -297,6 +297,14 @@ fun SettingsScreen(
                             isEnabled = userSettings.useSystemVolume, 
                             onToggle = { viewModel.toggleUseSystemVolume(it) }
                         )
+                        HorizontalDivider(color = Color(0xFFEEEEEE))
+                        
+                        AdhanSelector(
+                            selected = userSettings.selectedAdhan,
+                            onSelect = { viewModel.updateSelectedAdhan(it) },
+                            onTest = { viewModel.playTestAdhan() },
+                            onStop = { viewModel.stopAdhan() }
+                        )
                     }
                 }
 
@@ -578,6 +586,75 @@ fun TafseerSelectionRow(label: String, isSelected: Boolean, onSelect: () -> Unit
                 selectedColor = Color(0xFF70a080)
             )
         )
+    }
+}
+
+@Composable
+fun AdhanSelector(
+    selected: String,
+    onSelect: (String) -> Unit,
+    onTest: () -> Unit,
+    onStop: () -> Unit
+) {
+    val adhans = listOf(
+        "adhan_ahmed_kourdi" to stringResource(R.string.adhan_ahmed_kourdi),
+        "adhan_makkah" to stringResource(R.string.adhan_makkah),
+        "adhan_rabeh" to stringResource(R.string.adhan_rabeh)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.select_adhan),
+                fontSize = 16.sp,
+                color = Color(0xFF333333),
+                fontWeight = FontWeight.Medium
+            )
+            
+            Row {
+                IconButton(onClick = onTest, modifier = Modifier.size(32.dp)) {
+                    Icon(Lucide.Play, contentDescription = "Test", tint = Color(0xFF70a080), modifier = Modifier.size(20.dp))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(onClick = onStop, modifier = Modifier.size(32.dp)) {
+                    Icon(Lucide.Square, contentDescription = "Stop", tint = Color.Red.copy(alpha = 0.7f), modifier = Modifier.size(20.dp))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        adhans.forEach { (id, label) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { onSelect(id) }
+                    .padding(vertical = 8.dp, horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (selected == id),
+                    onClick = { onSelect(id) },
+                    colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF70a080))
+                )
+                Text(
+                    text = label,
+                    fontSize = 14.sp,
+                    color = if (selected == id) Color(0xFF70a080) else Color(0xFF4A5568),
+                    fontWeight = if (selected == id) FontWeight.Bold else FontWeight.Normal,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
     }
 }
 

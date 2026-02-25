@@ -20,12 +20,16 @@ class NotificationReceiver : BroadcastReceiver() {
         val body = intent.getStringExtra("body") ?: "It is time for prayer"
         val channelId = intent.getStringExtra("channelId") ?: NotificationHelper.ADHAN_CHANNEL_ID
         val id = intent.getIntExtra("id", 100)
+        val latitude = intent.getDoubleExtra("latitude", 0.0)
+        val longitude = intent.getDoubleExtra("longitude", 0.0)
 
-        Log.d(TAG, "Notification received: title=$title, id=$id")
+        Log.d(TAG, "Notification received: title=$title, id=$id, lat=$latitude, lon=$longitude")
 
         var fullScreenPendingIntent: PendingIntent? = null
         val isAdhan = channelId == NotificationHelper.ADHAN_CHANNEL_ID
         val isQiyam = id == 202
+        val soundEnabledByScheduler = intent.getBooleanExtra("soundEnabled", false)
+        val shouldShowStopAction = isAdhan || (isQiyam && soundEnabledByScheduler)
 
         if (isAdhan || isQiyam) {
             val alertIntent = Intent(context, PrayerAlertActivity::class.java).apply {
@@ -35,17 +39,17 @@ class NotificationReceiver : BroadcastReceiver() {
             }
             fullScreenPendingIntent = PendingIntent.getActivity(
                 context, id + 2000, alertIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
 
         val helper = NotificationHelper(context)
-        helper.showNotification(id, title, body, channelId, fullScreenPendingIntent)
+        helper.showNotification(id, title, body, channelId, fullScreenPendingIntent, showStopAction = shouldShowStopAction)
 
-        // For Adhan & Qiyam: also directly launch the alert activity
+        // For Adhan & Qiyam: also directly launch the alert activity if sound is on
         // fullScreenIntent only works when the phone is locked; this ensures
         // the dialog is shown even when the phone is unlocked.
-        if (isAdhan || isQiyam) {
+        if (shouldShowStopAction) {
             val directAlertIntent = Intent(context, PrayerAlertActivity::class.java).apply {
                 putExtra("title", title)
                 putExtra("body", body)
@@ -67,7 +71,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
                 // Sound Logic
                 if (channelId == NotificationHelper.ADHAN_CHANNEL_ID && settings.adhanEnabled) {
-                    NotificationHelper.playAdhanSound(context, settings.forceAdhanInSilent, settings.useSystemVolume)
+                    NotificationHelper.playAdhanSound(context, settings.forceAdhanInSilent, settings.useSystemVolume, settings.selectedAdhan)
                 } else if (channelId == NotificationHelper.QIYAM_CHANNEL_ID && isQiyam) {
                     // Only play alarm sound for Qiyam (ID 202).
                     val soundEnabledByScheduler = intent.getBooleanExtra("soundEnabled", false)
@@ -77,14 +81,18 @@ class NotificationReceiver : BroadcastReceiver() {
                 }
 
                 // Re-schedule notifications for the next day
-                val loc = LocationService.getCurrentLocation(context)
-                    ?: LocationService.getCachedLocation(context)
-
-                loc?.let {
+                if (latitude != 0.0 && longitude != 0.0) {
                     val scheduler = NotificationScheduler(context)
-                    scheduler.scheduleNotifications(settings, it.latitude, it.longitude)
-                    Log.d(TAG, "Re-scheduled notifications for next day")
-                } ?: Log.w(TAG, "Could not get location to reschedule")
+                    scheduler.scheduleNotifications(settings, latitude, longitude)
+                    Log.d(TAG, "Re-scheduled notifications using passed location")
+                } else {
+                    val loc = LocationService.getCachedLocation(context)
+                    loc?.let {
+                        val scheduler = NotificationScheduler(context)
+                        scheduler.scheduleNotifications(settings, it.latitude, it.longitude)
+                        Log.d(TAG, "Re-scheduled notifications using cached location")
+                    } ?: Log.w(TAG, "Could not get location to reschedule")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error in notification receiver: ${e.message}")
             } finally {

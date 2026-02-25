@@ -41,7 +41,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun playTestAdhan() {
         viewModelScope.launch {
             val currentSettings = settingsManager.settingsFlow.first()
-            NotificationHelper.playAdhanSound(getApplication(), currentSettings.forceAdhanInSilent, currentSettings.useSystemVolume)
+            NotificationHelper.playAdhanSound(getApplication(), currentSettings.forceAdhanInSilent, currentSettings.useSystemVolume, currentSettings.selectedAdhan)
         }
     }
 
@@ -155,6 +155,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             settingsManager.updateQiyamTime(time)
             rescheduleWithUpdatedSettings()
+        }
+    }
+
+    fun updateSelectedAdhan(adhan: String) {
+        viewModelScope.launch {
+            settingsManager.updateSelectedAdhan(adhan)
         }
     }
 

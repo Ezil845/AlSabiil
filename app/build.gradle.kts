@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.lottie.compose)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

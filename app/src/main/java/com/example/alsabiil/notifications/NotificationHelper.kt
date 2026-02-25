@@ -37,10 +37,15 @@ class NotificationHelper(private val context: Context) {
             }
         }
 
-        fun playAdhanSound(context: Context, forceInSilent: Boolean, useSystemVolume: Boolean) {
+        fun playAdhanSound(context: Context, forceInSilent: Boolean, useSystemVolume: Boolean, selectedAdhan: String = "adhan_ahmed_kourdi") {
             try {
                 stopAdhanSound()
-                val adhanSoundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.adhan}")
+                val resId = context.resources.getIdentifier(selectedAdhan, "raw", context.packageName)
+                val adhanSoundUri = if (resId != 0) {
+                    Uri.parse("android.resource://${context.packageName}/$resId")
+                } else {
+                    Uri.parse("android.resource://${context.packageName}/${R.raw.adhan_ahmed_kourdi}")
+                }
                 
                 val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
                 val streamType = if (forceInSilent) AudioManager.STREAM_ALARM else AudioManager.STREAM_NOTIFICATION
@@ -147,22 +152,13 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    fun showNotification(id: Int, title: String, body: String, channelId: String, fullScreenIntent: PendingIntent? = null) {
+    fun showNotification(id: Int, title: String, body: String, channelId: String, fullScreenIntent: PendingIntent? = null, showStopAction: Boolean = true) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(
             context, 0, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        // Intent to stop the sound
-        val stopIntent = Intent(context, StopSoundReceiver::class.java).apply {
-            putExtra("notification_id", id)
-        }
-        val stopPendingIntent = PendingIntent.getBroadcast(
-            context, id + 1000, stopIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val builder = NotificationCompat.Builder(context, channelId)
@@ -173,9 +169,20 @@ class NotificationHelper(private val context: Context) {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setContentIntent(pendingIntent)
             .setFullScreenIntent(fullScreenIntent, true)
-            .setAutoCancel(false)
-            .setOngoing(true)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, context.getString(R.string.stop_sound), stopPendingIntent)
+            .setAutoCancel(!showStopAction) // Auto-cancel if it's just a regular notification
+            .setOngoing(showStopAction) // Only ongoing if it has a sound that needs stopping
+
+        if (showStopAction) {
+            // Intent to stop the sound
+            val stopIntent = Intent(context, StopSoundReceiver::class.java).apply {
+                putExtra("notification_id", id)
+            }
+            val stopPendingIntent = PendingIntent.getBroadcast(
+                context, id + 1000, stopIntent,
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.addAction(android.R.drawable.ic_menu_close_clear_cancel, context.getString(R.string.stop_sound), stopPendingIntent)
+        }
 
         notificationManager.notify(id, builder.build())
     }

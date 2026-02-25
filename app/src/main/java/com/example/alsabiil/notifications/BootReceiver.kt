@@ -18,7 +18,8 @@ class BootReceiver : BroadcastReceiver() {
                 try {
                     val settingsManager = SettingsManager(context)
                     val settings = settingsManager.settingsFlow.first()
-                    val loc = LocationService.getCurrentLocation(context)
+                    val loc = LocationService.getCurrentLocation(context) 
+                        ?: LocationService.getCachedLocation(context)
                     
                     loc?.let {
                         val scheduler = NotificationScheduler(context)

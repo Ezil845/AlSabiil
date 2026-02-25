@@ -19,6 +19,7 @@ import com.composables.icons.lucide.*
 import com.example.alsabiil.R
 import com.example.alsabiil.components.AyahCard
 import com.example.alsabiil.components.PrayerTimeCard
+import com.example.alsabiil.components.LoadingIndicator
 import com.example.alsabiil.repository.AyahRepository
 import com.example.alsabiil.utils.LocationService
 import com.example.alsabiil.utils.PrayerTimeCalculator
@@ -137,89 +138,92 @@ fun WelcomeScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .verticalScroll(rememberScrollState())
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 100.dp), // Extra bottom padding for nav bar
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        
-        prayerTimes?.let { times ->
+    if (prayerTimes == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            LoadingIndicator()
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor)
+                .verticalScroll(rememberScrollState())
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 100.dp), // Extra bottom padding for nav bar
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            
             PrayerTimeCard(
                 nextPrayer = nextPrayerName,
                 countdown = countdown,
                 location = locationName,
-                prayerTimes = times,
+                prayerTimes = prayerTimes!!,
                 isMuted = isMuted,
                 onMuteToggle = onMuteToggle,
                 onSettingsClick = onSettingsClick,
                 hijriOffset = userSettings?.hijriOffset ?: 0
             )
-        } ?: Box(
-            modifier = Modifier.fillMaxWidth().height(200.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = primaryColor)
-        }
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        
-        AyahCard(contentList = ayahContent)
-
-        // Show welcome overlay for first time users
-        if (userSettings?.firstLaunchCompleted == false) {
-            val uriHandler = LocalUriHandler.current
             
-            AlertDialog(
-                onDismissRequest = { 
-                    // Prevent dismiss by tapping outside, force them to click "Got it"
-                },
-                title = {
-                    Text(
-                        text = stringResource(R.string.welcome_test_mode_title),
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A202C)
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.welcome_test_mode_desc),
-                        color = Color(0xFF4A5568)
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = { 
-                            settingsViewModel.updateFirstLaunchCompleted()
-                        },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF70a080))
-                    ) {
-                        Text(text = stringResource(R.string.got_it), fontWeight = FontWeight.Bold)
-                    }
-                },
-                dismissButton = {
-                    IconButton(
-                        onClick = { 
-                            uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git")
-                            settingsViewModel.updateFirstLaunchCompleted()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Lucide.Github,
-                            contentDescription = stringResource(R.string.open_github),
-                            tint = Color(0xFF1E293B),
-                            modifier = Modifier.size(36.dp)
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            AyahCard(contentList = ayahContent)
+
+            // Show welcome overlay for first time users
+            if (userSettings?.firstLaunchCompleted == false) {
+                val uriHandler = LocalUriHandler.current
+                
+                AlertDialog(
+                    onDismissRequest = { 
+                        // Prevent dismiss by tapping outside, force them to click "Got it"
+                    },
+                    title = {
+                        Text(
+                            text = stringResource(R.string.welcome_test_mode_title),
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1A202C)
                         )
-                    }
-                },
-                containerColor = Color.White,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                tonalElevation = 0.dp
-            )
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.welcome_test_mode_desc),
+                            color = Color(0xFF4A5568)
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = { 
+                                settingsViewModel.updateFirstLaunchCompleted()
+                            },
+                            colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF70a080))
+                        ) {
+                            Text(text = stringResource(R.string.got_it), fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    dismissButton = {
+                        IconButton(
+                            onClick = { 
+                                uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git")
+                                settingsViewModel.updateFirstLaunchCompleted()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Lucide.Github,
+                                contentDescription = stringResource(R.string.open_github),
+                                tint = Color(0xFF1E293B),
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    },
+                    containerColor = Color.White,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    tonalElevation = 0.dp
+                )
+            }
         }
     }
 }

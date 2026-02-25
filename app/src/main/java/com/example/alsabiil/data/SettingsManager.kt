@@ -36,6 +36,7 @@ class SettingsManager(private val context: Context) {
         val ADHKAR_SOUND_ENABLED = booleanPreferencesKey("adhkar_sound_enabled")
         val QIYAM_TIME = stringPreferencesKey("qiyam_time")
         val HIJRI_OFFSET = intPreferencesKey("hijri_offset")
+        val SELECTED_ADHAN = stringPreferencesKey("selected_adhan")
 
         val LAST_READ_PAGE = intPreferencesKey("last_read_page")
         val FIRST_LAUNCH_COMPLETED = booleanPreferencesKey("first_launch_completed")
@@ -64,9 +65,16 @@ class SettingsManager(private val context: Context) {
             adhkarSoundEnabled = preferences[ADHKAR_SOUND_ENABLED] ?: false,
             qiyamTime = preferences[QIYAM_TIME] ?: "DEFAULT",
             hijriOffset = preferences[HIJRI_OFFSET] ?: 0,
+            selectedAdhan = preferences[SELECTED_ADHAN] ?: "adhan_ahmed_kourdi",
             lastReadPage = preferences[LAST_READ_PAGE] ?: 1,
             firstLaunchCompleted = preferences[FIRST_LAUNCH_COMPLETED] ?: false
         )
+    }
+
+    suspend fun updateSelectedAdhan(adhan: String) {
+        context.dataStore.edit { settings ->
+            settings[SELECTED_ADHAN] = adhan
+        }
     }
 
     suspend fun updateHijriOffset(offset: Int) {
@@ -212,6 +220,7 @@ data class UserSettings(
     val adhkarSoundEnabled: Boolean,
     val qiyamTime: String,
     val hijriOffset: Int,
+    val selectedAdhan: String,
     val lastReadPage: Int,
     val firstLaunchCompleted: Boolean
 )

@@ -86,7 +86,7 @@ fun AzkarScreen(repository: AzkarRepository) {
                         AzkarRepository.MORNING -> stringResource(R.string.morning_azkar)
                         AzkarRepository.EVENING -> stringResource(R.string.evening_azkar)
                         AzkarRepository.AFTER_PRAYER -> stringResource(R.string.after_prayer_azkar)
-                        else -> category
+                        else -> category // Use the Arabic title from the JSON directly for others
                     }
 
                     Surface(

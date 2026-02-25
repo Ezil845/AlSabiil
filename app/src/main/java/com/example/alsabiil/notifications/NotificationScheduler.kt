@@ -33,23 +33,23 @@ class NotificationScheduler(private val context: Context) {
         Log.d(TAG, "Prayer times: Fajr=${prayerTimes.fajr}, Dhuhr=${prayerTimes.dhuhr}, Asr=${prayerTimes.asr}, Maghrib=${prayerTimes.maghrib}, Isha=${prayerTimes.isha}")
 
         // 1. Prayer Notifications
-        schedulePrayerAlarm(context.getString(R.string.fajr), prayerTimes.fajr, settings.fajrNotif, 100)
-        schedulePrayerAlarm(context.getString(R.string.sunrise), prayerTimes.sunrise, settings.sunriseNotif, 101)
-        schedulePrayerAlarm(context.getString(R.string.dhuhr), prayerTimes.dhuhr, settings.dhuhrNotif, 102)
-        schedulePrayerAlarm(context.getString(R.string.asr), prayerTimes.asr, settings.asrNotif, 103)
-        schedulePrayerAlarm(context.getString(R.string.maghrib), prayerTimes.maghrib, settings.maghribNotif, 104)
-        schedulePrayerAlarm(context.getString(R.string.isha), prayerTimes.isha, settings.ishaNotif, 105)
+        schedulePrayerAlarm(context.getString(R.string.fajr), prayerTimes.fajr, settings.fajrNotif, 100, latitude, longitude)
+        schedulePrayerAlarm(context.getString(R.string.sunrise), prayerTimes.sunrise, settings.sunriseNotif, 101, latitude, longitude)
+        schedulePrayerAlarm(context.getString(R.string.dhuhr), prayerTimes.dhuhr, settings.dhuhrNotif, 102, latitude, longitude)
+        schedulePrayerAlarm(context.getString(R.string.asr), prayerTimes.asr, settings.asrNotif, 103, latitude, longitude)
+        schedulePrayerAlarm(context.getString(R.string.maghrib), prayerTimes.maghrib, settings.maghribNotif, 104, latitude, longitude)
+        schedulePrayerAlarm(context.getString(R.string.isha), prayerTimes.isha, settings.ishaNotif, 105, latitude, longitude)
 
         // 2. Adhkar Notifications (relative to prayers)
         // Morning: Fajr + 30 mins
-        scheduleAdhkarAlarm(context.getString(R.string.morning_azkar), prayerTimes.fajr, 30, settings.morningAdhkar, settings.adhkarSoundEnabled, 200)
+        scheduleAdhkarAlarm(context.getString(R.string.morning_azkar), prayerTimes.fajr, 30, settings.morningAdhkar, settings.adhkarSoundEnabled, 200, latitude, longitude)
         // Evening: Asr + 15 mins
-        scheduleAdhkarAlarm(context.getString(R.string.evening_azkar), prayerTimes.asr, 15, settings.eveningAdhkar, settings.adhkarSoundEnabled, 201)
+        scheduleAdhkarAlarm(context.getString(R.string.evening_azkar), prayerTimes.asr, 15, settings.eveningAdhkar, settings.adhkarSoundEnabled, 201, latitude, longitude)
         // Qiyam: Custom user time or default relative to Fajr
-        scheduleQiyamAlarm(settings.qiyamTime, prayerTimes.fajr, settings.qiyamAdhkar, settings.adhkarSoundEnabled, 202)
+        scheduleQiyamAlarm(settings.qiyamTime, prayerTimes.fajr, settings.qiyamAdhkar, settings.adhkarSoundEnabled, 202, latitude, longitude)
     }
 
-    private fun schedulePrayerAlarm(name: String, timeStr: String, enabled: Boolean, id: Int) {
+    private fun schedulePrayerAlarm(name: String, timeStr: String, enabled: Boolean, id: Int, latitude: Double, longitude: Double) {
         if (!enabled) {
             cancelAlarm(id)
             return
@@ -80,18 +80,20 @@ class NotificationScheduler(private val context: Context) {
             putExtra("body", body)
             putExtra("channelId", NotificationHelper.ADHAN_CHANNEL_ID)
             putExtra("id", id)
+            putExtra("latitude", latitude)
+            putExtra("longitude", longitude)
             addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context, id, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         scheduleAlarmCompat(calendar.timeInMillis, pendingIntent)
     }
 
-    private fun scheduleAdhkarAlarm(name: String, relativeTo: String, offsetMinutes: Int, enabled: Boolean, soundEnabled: Boolean, id: Int) {
+    private fun scheduleAdhkarAlarm(name: String, relativeTo: String, offsetMinutes: Int, enabled: Boolean, soundEnabled: Boolean, id: Int, latitude: Double, longitude: Double) {
         if (!enabled) {
             cancelAlarm(id)
             return
@@ -111,18 +113,20 @@ class NotificationScheduler(private val context: Context) {
             putExtra("channelId", NotificationHelper.ADHKAR_CHANNEL_ID)
             putExtra("id", id)
             putExtra("soundEnabled", soundEnabled)
+            putExtra("latitude", latitude)
+            putExtra("longitude", longitude)
             addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context, id, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         scheduleAlarmCompat(calendar.timeInMillis, pendingIntent)
     }
 
-    private fun scheduleQiyamAlarm(qiyamTimeSetting: String, fajrTomorrowStr: String, enabled: Boolean, soundEnabled: Boolean, id: Int) {
+    private fun scheduleQiyamAlarm(qiyamTimeSetting: String, fajrTomorrowStr: String, enabled: Boolean, soundEnabled: Boolean, id: Int, latitude: Double, longitude: Double) {
         if (!enabled) {
             cancelAlarm(id)
             return
@@ -151,12 +155,14 @@ class NotificationScheduler(private val context: Context) {
             putExtra("channelId", NotificationHelper.QIYAM_CHANNEL_ID)
             putExtra("id", id)
             putExtra("soundEnabled", soundEnabled)
+            putExtra("latitude", latitude)
+            putExtra("longitude", longitude)
             addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context, id, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         scheduleAlarmCompat(calendar.timeInMillis, pendingIntent)
@@ -166,7 +172,7 @@ class NotificationScheduler(private val context: Context) {
         val intent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context, id, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_NO_CREATE
         )
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
