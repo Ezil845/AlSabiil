@@ -244,18 +244,11 @@ fun SettingsScreen(
                                 } else {
                                     viewModel.toggleAdhkarNotif(SettingsManager.QIYAM_ADHKAR, false)
                                 }
-                            }
+                            },
+                            subtitle = stringResource(R.string.qiyam_alarm_desc)
                         )
                         HorizontalDivider(color = Color(0xFFEEEEEE))
                         
-                        // Sound option for Adhkar
-                        NotificationRow(
-                            label = stringResource(R.string.remind_with_sound), 
-                            isEnabled = userSettings.adhkarSoundEnabled, 
-                            onToggle = { viewModel.toggleAdhkarSoundEnabled(it) }
-                        )
-                        HorizontalDivider(color = Color(0xFFEEEEEE))
-
                         // Custom Qiyam time
                         Row(
                             modifier = Modifier
@@ -280,6 +273,9 @@ fun SettingsScreen(
                             }
                             Icon(Icons.Default.Schedule, contentDescription = null, tint = Color(0xFF70a080))
                         }
+                        
+
+
                     }
                 }
 
@@ -503,6 +499,7 @@ fun NotificationRow(
     label: String, 
     isEnabled: Boolean, 
     onToggle: (Boolean) -> Unit,
+    subtitle: String? = null,
     action: (@Composable () -> Unit)? = null
 ) {
     Row(
@@ -516,12 +513,22 @@ fun NotificationRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Text(
-                text = label, 
-                fontSize = 16.sp,
-                color = Color(0xFF333333),
-                fontWeight = FontWeight.Medium
-            )
+            Column {
+                Text(
+                    text = label, 
+                    fontSize = 16.sp,
+                    color = Color(0xFF333333),
+                    fontWeight = FontWeight.Medium
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        lineHeight = 16.sp
+                    )
+                }
+            }
             if (action != null) {
                 Spacer(modifier = Modifier.width(8.dp))
                 action()

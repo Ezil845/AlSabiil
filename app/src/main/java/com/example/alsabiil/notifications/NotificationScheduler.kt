@@ -45,8 +45,8 @@ class NotificationScheduler(private val context: Context) {
         scheduleAdhkarAlarm(context.getString(R.string.morning_azkar), prayerTimes.fajr, 30, settings.morningAdhkar, settings.adhkarSoundEnabled, 200, latitude, longitude)
         // Evening: Asr + 15 mins
         scheduleAdhkarAlarm(context.getString(R.string.evening_azkar), prayerTimes.asr, 15, settings.eveningAdhkar, settings.adhkarSoundEnabled, 201, latitude, longitude)
-        // Qiyam: Custom user time or default relative to Fajr
-        scheduleQiyamAlarm(settings.qiyamTime, prayerTimes.fajr, settings.qiyamAdhkar, settings.adhkarSoundEnabled, 202, latitude, longitude)
+        // Qiyam: Custom user time or default relative to Fajr (Always with sound if enabled)
+        scheduleQiyamAlarm(settings.qiyamTime, prayerTimes.fajr, settings.qiyamAdhkar, true, 202, latitude, longitude)
     }
 
     private fun schedulePrayerAlarm(name: String, timeStr: String, enabled: Boolean, id: Int, latitude: Double, longitude: Double) {
@@ -78,7 +78,9 @@ class NotificationScheduler(private val context: Context) {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             putExtra("title", context.getString(R.string.notification_prayer_title, name))
             putExtra("body", body)
-            putExtra("channelId", NotificationHelper.ADHAN_CHANNEL_ID)
+            // Sunrise (id=101) shouldn't trigger adhan sound or full-screen alert
+            val channelId = if (id == 101) NotificationHelper.ADHKAR_CHANNEL_ID else NotificationHelper.ADHAN_CHANNEL_ID
+            putExtra("channelId", channelId)
             putExtra("id", id)
             putExtra("latitude", latitude)
             putExtra("longitude", longitude)

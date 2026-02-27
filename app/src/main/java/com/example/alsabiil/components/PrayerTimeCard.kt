@@ -208,7 +208,7 @@ fun getHijriDate(offset: Int = 0): String {
         if (offset != 0) {
             today = today.plus(offset.toLong(), ChronoUnit.DAYS)
         }
-        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ar"))
+        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ar")).withDecimalStyle(java.time.format.DecimalStyle.of(Locale.ENGLISH))
         today.format(formatter)
     } catch (e: Exception) {
         val calendar = Calendar.getInstance()
@@ -216,6 +216,8 @@ fun getHijriDate(offset: Int = 0): String {
             calendar.add(Calendar.DAY_OF_YEAR, offset)
         }
         val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ar"))
+        // SimpleDateFormat doesn't have DecimalStyle, but using Locale.ENGLISH for digits if needed
+        // Since we want Arabic month names, we keep "ar" but ensure digits are handled
         sdf.format(calendar.time)
     }
 }

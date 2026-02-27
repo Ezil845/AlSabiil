@@ -36,6 +36,11 @@ class PrayerAlertActivity : ComponentActivity() {
         super.attachBaseContext(base.createConfigurationContext(config))
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        NotificationHelper.stopAdhanSound()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         

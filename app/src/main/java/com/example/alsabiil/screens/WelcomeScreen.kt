@@ -131,7 +131,7 @@ fun WelcomeScreen(
                 val h = (totalSeconds / 3600).toInt()
                 val m = ((totalSeconds % 3600) / 60).toInt()
                 val s = (totalSeconds % 60).toInt()
-                countdown = String.format("%02d:%02d:%02d", h, m, s)
+                countdown = String.format(Locale.ENGLISH, "%02d:%02d:%02d", h, m, s)
                 
                 delay(1000L)
             }

@@ -92,7 +92,7 @@ class PrayerTimeCalculator(
         val totalMinutes = (time * 60.0).roundToInt()
         val hours = (totalMinutes / 60) % 24
         val minutes = totalMinutes % 60
-        return String.format("%02d:%02d", hours, minutes)
+        return String.format(Locale.ENGLISH, "%02d:%02d", hours, minutes)
     }
 
     fun calculateTimes(date: Calendar = Calendar.getInstance()): PrayerTimes {

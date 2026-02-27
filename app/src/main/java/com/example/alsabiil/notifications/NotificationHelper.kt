@@ -66,6 +66,10 @@ class NotificationHelper(private val context: Context) {
                             .setLegacyStreamType(streamType)
                             .build()
                     )
+                    setOnCompletionListener {
+                        it.release()
+                        if (mediaPlayer == it) mediaPlayer = null
+                    }
                     prepare()
                     start()
                 }
@@ -97,6 +101,10 @@ class NotificationHelper(private val context: Context) {
                             .setLegacyStreamType(AudioManager.STREAM_ALARM)
                             .build()
                     )
+                    setOnCompletionListener {
+                        it.release()
+                        if (mediaPlayer == it) mediaPlayer = null
+                    }
                     prepare()
                     start()
                 }
@@ -162,7 +170,8 @@ class NotificationHelper(private val context: Context) {
         )
 
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_app_icon)
+            .setSmallIcon(R.drawable.new_ic_notification)
+            .setColor(android.graphics.Color.TRANSPARENT)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

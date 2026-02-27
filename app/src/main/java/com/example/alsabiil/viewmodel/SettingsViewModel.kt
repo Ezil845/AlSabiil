@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val settingsManager = SettingsManager(application)
     private val scheduler = NotificationScheduler(application)
-    private val notificationHelper = NotificationHelper(application)
+
 
     val settings: StateFlow<UserSettings?> = settingsManager.settingsFlow
         .stateIn(
@@ -45,28 +45,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun playTestAlarm() {
-        viewModelScope.launch {
-            val currentSettings = settingsManager.settingsFlow.first()
-            NotificationHelper.playAlarmSound(getApplication(), currentSettings.useSystemVolume)
-        }
-    }
-
-    fun testQiyamAlert() {
-        val intent = android.content.Intent(getApplication(), com.example.alsabiil.notifications.PrayerAlertActivity::class.java).apply {
-            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        getApplication<android.app.Application>().startActivity(intent)
-        
-        viewModelScope.launch {
-            val currentSettings = settingsManager.settingsFlow.first()
-            NotificationHelper.playAlarmSound(getApplication(), currentSettings.useSystemVolume)
-        }
-    }
 
     fun stopAdhan() {
         NotificationHelper.stopAdhanSound()
     }
+
 
     /**
      * Schedule notifications when the app starts up, ensuring alarms are set

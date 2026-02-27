@@ -34,14 +34,29 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alsabiil.viewmodel.SettingsViewModel
 
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
-fun MushafScreen(repository: QuranRepository, initialPage: Int? = null) {
+fun MushafScreen(
+    repository: QuranRepository, 
+    initialPage: Int? = null
+) {
     val context = LocalContext.current
     val view = LocalView.current
     val settingsViewModel: SettingsViewModel = viewModel()
     val userSettings by settingsViewModel.settings.collectAsState()
     val bookmarks by settingsViewModel.bookmarks.collectAsState()
+
+    // Ensure system bars (StatusBar/NavigationBar) are hidden
+    LaunchedEffect(Unit) {
+        val window = (context as? android.app.Activity)?.window ?: return@LaunchedEffect
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
 
     // Derive a set of (surahNumber, ayahNumber) for highlight lookup
     val bookmarkedAyahs = remember(bookmarks) {
@@ -97,62 +112,74 @@ fun MushafScreen(repository: QuranRepository, initialPage: Int? = null) {
             val surahName = repository.getSurahNameByPage(currentPage)
             val juzz = repository.getJuzzByPage(currentPage)
 
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.juzz_num, juzz),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF70a080),
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = surahName,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color(0xFF70a080),
-                            fontWeight = FontWeight.Bold
-                        )
+            // Custom compact top bar (48dp instead of default 64dp+)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                color = Color(0xFFf3f6f3),
+                shadowElevation = 2.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.juzz_num, juzz),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF70a080),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    
+                    Text(
+                        text = surahName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFF70a080),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { showBookmarks = !showBookmarks },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bookmark,
+                                contentDescription = stringResource(R.string.tab_bookmarks),
+                                tint = Color(0xFF70a080),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        IconButton(
+                            onClick = { showIndex = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.List,
+                                contentDescription = stringResource(R.string.index_label),
+                                tint = Color(0xFF70a080),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { showBookmarks = !showBookmarks }) {
-                        Icon(
-                            imageVector = Icons.Default.Bookmark,
-                            contentDescription = stringResource(R.string.tab_bookmarks),
-                            tint = Color(0xFF70a080)
-                        )
-                    }
-                    IconButton(onClick = { showIndex = true }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.List,
-                            contentDescription = stringResource(R.string.index_label),
-                            tint = Color(0xFF70a080)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFf3f6f3),
-                    titleContentColor = Color(0xFF70a080)
-                )
-            )
+                }
+            }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding()) // ONLY top padding, let BottomBar overlap or handle its own
         ) {
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(if (showBookmarks) Modifier.padding(bottom = 220.dp) else Modifier) // Make space for bookmarks panel
+                    .then(if (showBookmarks) Modifier.padding(bottom = 220.dp) else Modifier)
             ) {
                 items(totalPages) { pageIndex ->
                     val pageNumber = pageIndex + 1

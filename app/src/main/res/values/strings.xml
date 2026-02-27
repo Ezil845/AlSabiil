@@ -42,6 +42,7 @@
     <string name="auto_detect">Auto-detect</string>
     <string name="language_label">Language</string>
     <string name="test_adhan">Test Adhan Sound</string>
+    <string name="test_notif_icon">Test Notification Icon</string>
     <string name="color_palette_title">COLOR PALETTE</string>
     <string name="adhan_settings_title">ADHAN SETTINGS</string>
     <string name="force_adhan_silent">Play even in silent mode</string>
@@ -53,6 +54,7 @@
     <string name="adhan_rabeh">Rabeh Al Jazairi</string>
     <string name="remind_with_sound">Remind with sound (Alarm)</string>
     <string name="qiyam_time_label">Qiyam Al-Layl Time</string>
+    <string name="qiyam_alarm_desc">Alarm sound</string>
     <string name="default_time">Default (1h before Fajr)</string>
     <string name="test_alert_title">Test Visual Alert</string>
     <string name="hijri_adjustment_title">Hijri Date Adjustment</string>

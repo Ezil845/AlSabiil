@@ -138,6 +138,7 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val quranRepository = remember { QuranRepository(context) }
                 val azkarRepository = remember { AzkarRepository(context) }
+                
                 val items = listOf(
                     Screen.Welcome,
                     Screen.Quran,
@@ -151,9 +152,9 @@ class MainActivity : ComponentActivity() {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
                         
-                        // Hide bottom bar on Quran screen for immersive reading
-                        val isQuranScreen = currentDestination?.route == Screen.Quran.route
-                        val showBottomBar = items.any { it.route == currentDestination?.route } && !isQuranScreen
+                        // Show bottom bar on all main screens including Quran
+                        val isQuranScreen = currentDestination?.route == Screen.Quran.route || currentDestination?.route?.startsWith("quran/") == true
+                        val showBottomBar = items.any { it.route == currentDestination?.route } || isQuranScreen
                         
                         if (showBottomBar) {
                             NavigationBar(
@@ -200,11 +201,16 @@ class MainActivity : ComponentActivity() {
                             WelcomeScreen(onSettingsClick = { navController.navigate(Screen.SettingsTab.route) }) 
                         }
                         composable(Screen.Quran.route) { 
-                            MushafScreen(quranRepository) 
+                            MushafScreen(
+                                repository = quranRepository
+                            ) 
                         }
                         composable("quran/{page}") { backStackEntry ->
                             val page = backStackEntry.arguments?.getString("page")?.toIntOrNull()
-                            MushafScreen(quranRepository, initialPage = page)
+                            MushafScreen(
+                                repository = quranRepository,
+                                initialPage = page
+                            )
                         }
                         composable(Screen.Azkar.route) { AzkarScreen(azkarRepository) }
                         composable(Screen.Qibla.route) { QiblaScreen() }

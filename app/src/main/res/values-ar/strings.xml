@@ -41,6 +41,7 @@
     <string name="auto_detect">تحديد تلقائي</string>
     <string name="language_label">اللغة</string>
     <string name="test_adhan">اختبار صوت الأذان</string>
+    <string name="test_notif_icon">اختبار أيقونة الإشعارات</string>
     <string name="color_palette_title">ألوان التطبيق</string>
     <string name="adhan_settings_title">إعدادات الأذان</string>
     <string name="force_adhan_silent">التشغيل حتى في الوضع الصامت</string>
@@ -52,6 +53,7 @@
     <string name="adhan_rabeh">رابح بن درة الجزائري</string>
     <string name="remind_with_sound">تذكير مع صوت (منبه)</string>
     <string name="qiyam_time_label">وقت قيام الليل</string>
+    <string name="qiyam_alarm_desc">تنبيه بصوت المنبه</string>
     <string name="default_time">تلقائي (ساعة قبل الفجر)</string>
     <string name="test_alert_title">اختبار التنبيه البصري</string>
     <string name="hijri_adjustment_title">تعديل التاريخ الهجري</string>
