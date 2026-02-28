@@ -45,38 +45,23 @@ fun SettingsScreen(
     val settings by viewModel.settings.collectAsState()
     val backgroundColor = Color.White
 
-    var showTimePicker by remember { mutableStateOf(false) }
-    var showOverlayPermissionDialog by remember { mutableStateOf(false) }
-
-    if (showOverlayPermissionDialog) {
-        AlertDialog(
-            onDismissRequest = { showOverlayPermissionDialog = false },
-            title = { Text(stringResource(R.string.overlay_permission_title)) },
-            text = { Text(stringResource(R.string.overlay_permission_desc)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val intent = android.content.Intent(
-                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            android.net.Uri.parse("package:${context.packageName}")
-                        )
-                        context.startActivity(intent)
-                        showOverlayPermissionDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF70a080))
-                ) {
-                    Text(stringResource(R.string.open_settings), color = Color.White)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showOverlayPermissionDialog = false }) {
-                    Text(stringResource(R.string.cancel), color = Color.Gray)
-                }
-            },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(24.dp)
-        )
+    // Overlay permission state
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    var hasOverlayPermission by remember { mutableStateOf(android.provider.Settings.canDrawOverlays(context)) }
+    
+    // Recheck when returning from system settings
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                hasOverlayPermission = android.provider.Settings.canDrawOverlays(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+
+    var showTimePicker by remember { mutableStateOf(false) }
+
 
     if (showTimePicker && settings != null) {
         val current = if (settings!!.qiyamTime == "DEFAULT") {
@@ -223,6 +208,48 @@ fun SettingsScreen(
                     }
                 }
 
+                if (!hasOverlayPermission) {
+                    item {
+                        SettingsCard {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        val intent = android.content.Intent(
+                                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                            android.net.Uri.parse("package:${context.packageName}")
+                                        )
+                                        context.startActivity(intent)
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = stringResource(R.string.overlay_permission_title),
+                                        fontSize = 16.sp,
+                                        color = Color(0xFFE53E3E),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.overlay_permission_settings_hint),
+                                        fontSize = 12.sp,
+                                        color = Color.Gray,
+                                        lineHeight = 16.sp
+                                    )
+                                }
+                                Icon(
+                                    imageVector = Lucide.ShieldAlert,
+                                    contentDescription = null,
+                                    tint = Color(0xFFE53E3E),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
                 item { SectionTitle(stringResource(R.string.adhkar_reminders_title)) }
                 item {
                     SettingsCard {
@@ -233,18 +260,7 @@ fun SettingsScreen(
                         NotificationRow(
                             label = stringResource(R.string.qiyam_adhkar), 
                             isEnabled = userSettings.qiyamAdhkar, 
-                            onToggle = { enabled ->
-                                if (enabled) {
-                                    // Check if we have 'Display over other apps' permission
-                                    if (!android.provider.Settings.canDrawOverlays(context)) {
-                                        showOverlayPermissionDialog = true
-                                    } else {
-                                        viewModel.toggleAdhkarNotif(SettingsManager.QIYAM_ADHKAR, true)
-                                    }
-                                } else {
-                                    viewModel.toggleAdhkarNotif(SettingsManager.QIYAM_ADHKAR, false)
-                                }
-                            },
+                            onToggle = { viewModel.toggleAdhkarNotif(SettingsManager.QIYAM_ADHKAR, it) },
                             subtitle = stringResource(R.string.qiyam_alarm_desc)
                         )
                         HorizontalDivider(color = Color(0xFFEEEEEE))

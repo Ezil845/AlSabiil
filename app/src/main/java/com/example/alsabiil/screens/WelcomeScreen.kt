@@ -32,6 +32,7 @@ import java.util.*
 @Composable
 fun WelcomeScreen(
     onSettingsClick: () -> Unit,
+    permissionsHandled: Boolean = true,
     settingsViewModel: com.example.alsabiil.viewmodel.SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val context = LocalContext.current
@@ -83,15 +84,30 @@ fun WelcomeScreen(
         }
     }
 
-    // Fetch Location
+    // Fetch Location — retry a few times in case permission was just granted
     LaunchedEffect(Unit) {
-        val loc = LocationService.getCurrentLocation(context)
-        location = loc
-        loc?.let {
-            val name = LocationService.getCityNameWithCache(context, it.latitude, it.longitude)
-            locationName = name
-        } ?: run {
-            locationName = locationUnavailableText
+        var retries = 0
+        while (retries < 5) {
+            val loc = LocationService.getCurrentLocation(context)
+            if (loc != null) {
+                location = loc
+                val name = LocationService.getCityNameWithCache(context, loc.latitude, loc.longitude)
+                locationName = name
+                break
+            }
+            retries++
+            delay(2000L) // Wait 2s between retries for permission/location to become available
+        }
+        if (location == null) {
+            // Try cached location as fallback
+            val cached = LocationService.getCachedLocation(context)
+            if (cached != null) {
+                location = cached
+                val name = LocationService.getCityNameWithCache(context, cached.latitude, cached.longitude)
+                locationName = name
+            } else {
+                locationName = locationUnavailableText
+            }
         }
     }
 
@@ -138,6 +154,45 @@ fun WelcomeScreen(
         }
     }
 
+    // First-launch dialog flow
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    var hasOverlayPermission by remember { mutableStateOf(android.provider.Settings.canDrawOverlays(context)) }
+    
+    // Track if the user explicitly clicked "Cancel" on the overlay dialog so we can move on
+    var overlayDialogDismissed by remember { mutableStateOf(false) }
+    
+    var showOverlayPermissionDialog by remember { mutableStateOf(false) }
+    var showWelcomeDialog by remember { mutableStateOf(false) }
+
+    // Recheck overlay permission when returning from system settings
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                hasOverlayPermission = android.provider.Settings.canDrawOverlays(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // Logic for ordering the dialogs
+    LaunchedEffect(permissionsHandled, hasOverlayPermission, overlayDialogDismissed, userSettings?.firstLaunchCompleted) {
+        if (userSettings?.firstLaunchCompleted == false && permissionsHandled) {
+            if (!hasOverlayPermission && !overlayDialogDismissed) {
+                // Step 1: Show Overlay Dialog
+                showOverlayPermissionDialog = true
+                showWelcomeDialog = false
+            } else {
+                // Step 2: Overlay is granted or dismissed -> Show Welcome Dialog
+                showOverlayPermissionDialog = false
+                showWelcomeDialog = true
+            }
+        } else {
+            showOverlayPermissionDialog = false
+            showWelcomeDialog = false
+        }
+    }
+
     if (prayerTimes == null) {
         Box(
             modifier = Modifier
@@ -172,58 +227,102 @@ fun WelcomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             AyahCard(contentList = ayahContent)
-
-            // Show welcome overlay for first time users
-            if (userSettings?.firstLaunchCompleted == false) {
-                val uriHandler = LocalUriHandler.current
-                
-                AlertDialog(
-                    onDismissRequest = { 
-                        // Prevent dismiss by tapping outside, force them to click "Got it"
-                    },
-                    title = {
-                        Text(
-                            text = stringResource(R.string.welcome_test_mode_title),
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A202C)
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.welcome_test_mode_desc),
-                            color = Color(0xFF4A5568)
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = { 
-                                settingsViewModel.updateFirstLaunchCompleted()
-                            },
-                            colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF70a080))
-                        ) {
-                            Text(text = stringResource(R.string.got_it), fontWeight = FontWeight.Bold)
-                        }
-                    },
-                    dismissButton = {
-                        IconButton(
-                            onClick = { 
-                                uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git")
-                                settingsViewModel.updateFirstLaunchCompleted()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Lucide.Github,
-                                contentDescription = stringResource(R.string.open_github),
-                                tint = Color(0xFF1E293B),
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
-                    },
-                    containerColor = Color.White,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                    tonalElevation = 0.dp
-                )
-            }
         }
+    }
+
+    // Show welcome overlay for the first time
+    if (showWelcomeDialog) {
+        val uriHandler = LocalUriHandler.current
+        
+        AlertDialog(
+            onDismissRequest = { 
+                // Prevent dismiss by tapping outside, force them to click "Got it"
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.welcome_test_mode_title),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A202C)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.welcome_test_mode_desc),
+                    color = Color(0xFF4A5568)
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { 
+                        settingsViewModel.updateFirstLaunchCompleted()
+                        showWelcomeDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF70a080))
+                ) {
+                    Text(text = stringResource(R.string.got_it), fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                IconButton(
+                    onClick = { 
+                        uriHandler.openUri("https://github.com/Ezil845/AlSabiil.git")
+                        settingsViewModel.updateFirstLaunchCompleted()
+                        showWelcomeDialog = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Lucide.Github,
+                        contentDescription = stringResource(R.string.open_github),
+                        tint = Color(0xFF1E293B),
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            },
+            containerColor = Color.White,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp
+        )
+    }
+
+    // Overlay permission dialog
+    if (showOverlayPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showOverlayPermissionDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.overlay_permission_title),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A202C)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.overlay_permission_desc),
+                    color = Color(0xFF4A5568)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val intent = android.content.Intent(
+                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            android.net.Uri.parse("package:${context.packageName}")
+                        )
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF70a080))
+                ) {
+                    Text(stringResource(R.string.open_settings), color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { overlayDialogDismissed = true }) {
+                    Text(stringResource(R.string.cancel), color = Color.Gray)
+                }
+            },
+            containerColor = Color.White,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+            tonalElevation = 0.dp
+        )
     }
 }

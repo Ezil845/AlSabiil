@@ -120,7 +120,8 @@
     <string name="notification_qiyam_body">Time for night prayer</string>
     <string name="stop_sound">Stop</string>
     <string name="overlay_permission_title">Permission Required</string>
-    <string name="overlay_permission_desc">To show the Qiyam Al-Layl alert while the app is closed, please enable \'Appear on top\' in system settings.</string>
+    <string name="overlay_permission_desc">To display prayer time and Qiyam Al-Layl alerts while the app is closed, AlSabiil needs the \'Display over other apps\' permission. This allows the alert to appear on your screen at prayer time.</string>
+    <string name="overlay_permission_settings_hint">Tap here to enable \'Appear on top\' so alerts and alarms can display.</string>
     <string name="open_settings">Open Settings</string>
     
     <!-- Welcome Message -->

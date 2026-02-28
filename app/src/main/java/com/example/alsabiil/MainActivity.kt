@@ -22,6 +22,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,31 +99,12 @@ sealed class Screen(val route: String, val resourceId: Int, val icon: @Composabl
 }
 
 class MainActivity : ComponentActivity() {
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        // Handle permissions if needed
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Ensure Arabic Locale is applied
         AlSabiilApp.forceArabicLocale(this)
-
-        // Request permissions
-        val permissions = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
-            permissions.add(Manifest.permission.USE_FULL_SCREEN_INTENT)
-        }
-        
-        if (permissions.any { ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }) {
-            requestPermissionLauncher.launch(permissions.toTypedArray())
-        }
 
         enableEdgeToEdge()
         
@@ -129,6 +115,33 @@ class MainActivity : ComponentActivity() {
         }
         
         setContent {
+            // Permission handling in Compose
+            var permissionsHandled by remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            
+            val permissionLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { _ ->
+                permissionsHandled = true
+            }
+
+            LaunchedEffect(Unit) {
+                val permissions = mutableListOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+                    permissions.add(Manifest.permission.USE_FULL_SCREEN_INTENT)
+                }
+                
+                if (permissions.any { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }) {
+                    permissionLauncher.launch(permissions.toTypedArray())
+                } else {
+                    permissionsHandled = true
+                }
+            }
+
             val settingsViewModel: com.example.alsabiil.viewmodel.SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
             val userSettings by settingsViewModel.settings.collectAsState()
             val currentPalette = com.example.alsabiil.ui.theme.AppPalette.fromId(userSettings?.selectedPalette ?: "emerald")
@@ -198,7 +211,10 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(navController, startDestination = Screen.Welcome.route, modifier = Modifier.padding(innerPadding)) {
                         composable(Screen.Welcome.route) { 
-                            WelcomeScreen(onSettingsClick = { navController.navigate(Screen.SettingsTab.route) }) 
+                            WelcomeScreen(
+                                onSettingsClick = { navController.navigate(Screen.SettingsTab.route) },
+                                permissionsHandled = permissionsHandled
+                            ) 
                         }
                         composable(Screen.Quran.route) { 
                             MushafScreen(

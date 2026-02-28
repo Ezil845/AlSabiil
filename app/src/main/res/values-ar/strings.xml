@@ -119,7 +119,8 @@
     <string name="notification_qiyam_body">حان وقت صلاة القيام</string>
     <string name="stop_sound">إيقاف</string>
     <string name="overlay_permission_title">الإذن مطلوب</string>
-    <string name="overlay_permission_desc">لإظهار تنبيه قيام الليل أثناء إغلاق التطبيق، يرجى تفعيل إذن \'الظهور فوق التطبيقات الأخرى\' من إعدادات النظام.</string>
+    <string name="overlay_permission_desc">لعرض تنبيهات أوقات الصلاة وقيام الليل أثناء إغلاق التطبيق، يحتاج السبيل إلى إذن \'الظهور فوق التطبيقات الأخرى\'. يسمح هذا للتنبيه بالظهور على شاشتك عند حلول وقت الصلاة.</string>
+    <string name="overlay_permission_settings_hint">اضغط هنا لتفعيل \'الظهور فوق التطبيقات الأخرى\' ليتم عرض التنبيهات.</string>
     <string name="open_settings">فتح الإعدادات</string>
     
     <!-- Welcome Message -->
