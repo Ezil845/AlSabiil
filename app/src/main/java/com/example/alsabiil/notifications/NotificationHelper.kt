@@ -53,7 +53,7 @@ class NotificationHelper(private val context: Context) {
 
                 if (!useSystemVolume) {
                     val maxVolume = audioManager.getStreamMaxVolume(streamType)
-                    val targetVolume = (maxVolume * 0.75).toInt()
+                    val targetVolume = (maxVolume * 0.6).toInt()
                     audioManager.setStreamVolume(streamType, targetVolume, 0)
                 }
 
@@ -88,7 +88,7 @@ class NotificationHelper(private val context: Context) {
                 
                 if (!useSystemVolume) {
                     val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
-                    val targetVolume = (maxVolume * 0.75).toInt()
+                    val targetVolume = (maxVolume * 0.6).toInt()
                     audioManager.setStreamVolume(AudioManager.STREAM_ALARM, targetVolume, 0)
                 }
 

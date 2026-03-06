@@ -47,7 +47,7 @@
     <string name="adhan_settings_title">ADHAN SETTINGS</string>
     <string name="force_adhan_silent">Play even in silent mode</string>
     <string name="use_system_volume">Use system volume</string>
-    <string name="use_default_volume">Use default volume (75%)</string>
+    <string name="use_default_volume">Use default volume (60%)</string>
     <string name="select_adhan">Select Adhan Sound</string>
     <string name="adhan_ahmed_kourdi">Ahmed El Kourdi</string>
     <string name="adhan_makkah">Makkah</string>

@@ -31,6 +31,7 @@ import com.example.alsabiil.viewmodel.SettingsViewModel
 import com.composables.icons.lucide.*
 
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.platform.LocalContext
 import java.util.Calendar
 
