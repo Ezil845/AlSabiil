@@ -6,9 +6,12 @@
 /captures/
 .externalNativeBuild/
 .cxx/
+*.apk
+*.aab
 
 # ===== Local configuration =====
 local.properties
+key.properties
 
 # ===== IDE / Android Studio =====
 .idea/

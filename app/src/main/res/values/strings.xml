@@ -41,6 +41,9 @@
     <string name="location_label">Location</string>
     <string name="auto_detect">Auto-detect</string>
     <string name="language_label">Language</string>
+    <string name="dark_mode_label">Dark Mode (Mushaf)</string>
+    <string name="share_app">Share App</string>
+    <string name="share_app_text">Check out AlSabiil - A clean and professional prayer times and Mushaf app: https://github.com/Ezil845/AlSabiil.git</string>
     <string name="test_adhan">Test Adhan Sound</string>
     <string name="test_notif_icon">Test Notification Icon</string>
     <string name="color_palette_title">COLOR PALETTE</string>
@@ -64,6 +67,63 @@
     <string name="hijri_zero">0</string>
     <string name="hijri_plus_one">+1</string>
     <string name="hijri_plus_two">+2</string>
+    <string name="home_widget_toggle">Home Screen Widget</string>
+    <string name="widget_disabled">Widget Disabled</string>
+    <string name="hours_left_short">h left</string>
+    <string name="minutes_left_short">m left</string>
+    <string name="adhan_label">ADHAN</string>
+    
+    <!-- Hijri Calendar -->
+    <string name="hijri_calendar">Hijri Calendar</string>
+    <string name="islamic_events">Islamic Events</string>
+    <string name="no_events_month">No major events this month</string>
+    <string name="select_month">Select Month</string>
+
+    <!-- Hijri Months -->
+    <string name="hijri_month_1">Muharram</string>
+    <string name="hijri_month_2">Safar</string>
+    <string name="hijri_month_3">Rabi\' al-awwal</string>
+    <string name="hijri_month_4">Rabi\' al-thani</string>
+    <string name="hijri_month_5">Jumada al-ula</string>
+    <string name="hijri_month_6">Jumada al-akhira</string>
+    <string name="hijri_month_7">Rajab</string>
+    <string name="hijri_month_8">Sha\'ban</string>
+    <string name="hijri_month_9">Ramadan</string>
+    <string name="hijri_month_10">Shawwal</string>
+    <string name="hijri_month_11">Dhu al-Qi\'dah</string>
+    <string name="hijri_month_12">Dhu al-Hijjah</string>
+
+    <!-- Islamic Events -->
+    <string name="event_hijri_new_year">Ra\'s as-Sana</string>
+    <string name="event_hijri_new_year_desc">Islamic New Year</string>
+    <string name="event_ashura">Ashura</string>
+    <string name="event_ashura_desc">Day of fasting and remembrance</string>
+    <string name="event_mawlid">Mawlid al-Nabi</string>
+    <string name="event_mawlid_desc">Prophet Muhammad\'s Birthday</string>
+    <string name="event_isra_miraj">Isra\' and Mi\'raj</string>
+    <string name="event_isra_miraj_desc">The Night Journey</string>
+    <string name="event_ramadan">Ramadan Start</string>
+    <string name="event_ramadan_desc">Beginning of the month of fasting</string>
+    <string name="event_laylat_al_qadr">Laylat al-Qadr</string>
+    <string name="event_laylat_al_qadr_desc">Most likely in the odd nights</string>
+    <string name="event_laylat_al_qadr_date">Odd Nights</string>
+    <string name="event_eid_al_fitr">Eid al-Fitr</string>
+    <string name="event_eid_al_fitr_desc">Festival of Breaking the Fast</string>
+    <string name="event_hajj_start">Hajj Season Starts</string>
+    <string name="event_hajj_start_desc">Beginning of Dhu al-Hijjah</string>
+    <string name="event_arafah">Day of Arafah</string>
+    <string name="event_arafah_desc">The holiest day in Islam</string>
+    <string name="event_eid_al_adha">Eid al-Adha</string>
+    <string name="event_eid_al_adha_desc">Festival of Sacrifice</string>
+    
+    <!-- Weekdays -->
+    <string name="day_sun">S</string>
+    <string name="day_mon">M</string>
+    <string name="day_tue">T</string>
+    <string name="day_wed">W</string>
+    <string name="day_thu">T</string>
+    <string name="day_fri">F</string>
+    <string name="day_sat">S</string>
     
     <!-- Common -->
     <string name="loading">Loading…</string>
@@ -72,6 +132,25 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="back_button">Back</string>
+    
+    <!-- Sunnah Checklist -->
+    <string name="sunnah_checklist">Sunnah Checklist</string>
+    <string name="sunnah_daily">Daily</string>
+    <string name="sunnah_weekly">Weekly</string>
+    <string name="sunnah_monthly">Monthly</string>
+    <string name="sunnah_siwak_title">Siwak</string>
+    <string name="sunnah_siwak_desc">Use siwak before each prayer</string>
+    <string name="sunnah_duha_title">Duha Prayer</string>
+    <string name="sunnah_duha_desc">Pray 2-8 units in the morning</string>
+    <string name="sunnah_witr_title">Witr Prayer</string>
+    <string name="sunnah_witr_desc">Close the night with an odd prayer</string>
+    <string name="sunnah_kahf_title">Surah Al-Kahf</string>
+    <string name="sunnah_kahf_desc">Read Al-Kahf on Friday</string>
+    <string name="sunnah_white_days_title">White Days Fasting</string>
+    <string name="sunnah_white_days_desc">Fast 13, 14, 15 of Hijri month</string>
+    <string name="sunnah_adhkar_after_prayer_title">Dhikr after Prayer</string>
+    <string name="sunnah_adhkar_after_prayer_desc">Sunnah dhikr after fard prayer</string>
+    <string name="sunnah_completed_message">Excellent progress! Keep going.</string>
     
     <!-- Quran Index -->
     <string name="tab_surah">Surah</string>
@@ -119,9 +198,6 @@
     <string name="notification_qiyam_title">Qiyam Al-Layl</string>
     <string name="notification_qiyam_body">Time for night prayer</string>
     <string name="stop_sound">Stop</string>
-    <string name="overlay_permission_title">Permission Required</string>
-    <string name="overlay_permission_desc">To display prayer time and Qiyam Al-Layl alerts while the app is closed, AlSabiil needs the \'Display over other apps\' permission. This allows the alert to appear on your screen at prayer time.</string>
-    <string name="overlay_permission_settings_hint">Tap here to enable \'Appear on top\' so alerts and alarms can display.</string>
     <string name="open_settings">Open Settings</string>
     
     <!-- Welcome Message -->
@@ -129,4 +205,27 @@
     <string name="welcome_test_mode_desc">Thank you for installing AlSabiil! Please note that this app is currently in test mode.\n\nIf you encounter any issues, wish to provide feedback, or want to contribute to the development, you can find our open-source project on GitHub.</string>
     <string name="open_github">Open GitHub</string>
     <string name="got_it">Got it</string>
+    <string name="exact_alarm_permission_needed">Please allow "Alarms &amp; Reminders" to ensure the Qiyam alarm rings exactly on time.</string>
+
+    <!-- Khatmah Planner -->
+    <string name="khatmah_planner">Khatmah Planner</string>
+    <string name="khatmah_set_goal">Set a goal to complete the Quran</string>
+    <string name="khatmah_target">Target:</string>
+    <string name="khatmah_days">%d days</string>
+    <string name="khatmah_pages_per_day">~%d pages per day</string>
+    <string name="khatmah_start">Start Khatmah</string>
+    <string name="khatmah_cancel">Cancel Khatmah</string>
+    <string name="khatmah_cancel_confirm">Are you sure you want to cancel your current Khatmah? All progress will be lost.</string>
+    <string name="khatmah_today_target">Today\'s Target</string>
+    <string name="khatmah_page_num">Page %d</string>
+    <string name="khatmah_remaining">Remaining</string>
+    <string name="khatmah_done">Done!</string>
+    <string name="khatmah_pages_left">%d pages</string>
+    <string name="khatmah_total_progress">Total Progress</string>
+    <string name="khatmah_continue">Continue Reading</string>
+    <string name="khatmah_read_ahead">Read Ahead</string>
+    <string name="khatmah_reminder">Daily Reminder</string>
+    <string name="khatmah_reminder_desc">Get a daily notification to read your Quran pages</string>
+    <string name="khatmah_reminder_notif_title">Khatmah Reminder 📖</string>
+    <string name="khatmah_reminder_notif_body">Time to read your daily Quran pages!</string>
 </resources>

@@ -40,6 +40,9 @@
     <string name="location_label">الموقع</string>
     <string name="auto_detect">تحديد تلقائي</string>
     <string name="language_label">اللغة</string>
+    <string name="dark_mode_label">الوضع الليلي (المصحف)</string>
+    <string name="share_app">مشاركة التطبيق</string>
+    <string name="share_app_text">جرب تطبيق السبيل - تطبيق صلوات ومصحف احترافي وبسيط: https://github.com/Ezil845/AlSabiil.git</string>
     <string name="test_adhan">اختبار صوت الأذان</string>
     <string name="test_notif_icon">اختبار أيقونة الإشعارات</string>
     <string name="color_palette_title">ألوان التطبيق</string>
@@ -63,6 +66,63 @@
     <string name="hijri_zero">0</string>
     <string name="hijri_plus_one">+1</string>
     <string name="hijri_plus_two">+2</string>
+    <string name="home_widget_toggle">ودجت الشاشة الرئيسية</string>
+    <string name="widget_disabled">الودجت معطل</string>
+    <string name="hours_left_short">ساعة متبقية</string>
+    <string name="minutes_left_short">دقيقة متبقية</string>
+    <string name="adhan_label">الأذان</string>
+
+    <!-- Hijri Calendar -->
+    <string name="hijri_calendar">التقويم الهجري</string>
+    <string name="islamic_events">المناسبات الإسلامية</string>
+    <string name="no_events_month">لا توجد مناسبات هامة هذا الشهر</string>
+    <string name="select_month">اختر الشهر</string>
+
+    <!-- Hijri Months -->
+    <string name="hijri_month_1">محرم</string>
+    <string name="hijri_month_2">صفر</string>
+    <string name="hijri_month_3">ربيع الأول</string>
+    <string name="hijri_month_4">ربيع الآخر</string>
+    <string name="hijri_month_5">جمادى الأولى</string>
+    <string name="hijri_month_6">جمادى الآخرة</string>
+    <string name="hijri_month_7">رجب</string>
+    <string name="hijri_month_8">شعبان</string>
+    <string name="hijri_month_9">رمضان</string>
+    <string name="hijri_month_10">شوال</string>
+    <string name="hijri_month_11">ذو القعدة</string>
+    <string name="hijri_month_12">ذو الحجة</string>
+
+    <!-- Islamic Events -->
+    <string name="event_hijri_new_year">رأس السنة الهجرية</string>
+    <string name="event_hijri_new_year_desc">بداية السنة الهجرية الجديدة</string>
+    <string name="event_ashura">عاشوراء</string>
+    <string name="event_ashura_desc">يوم عاشوراء وصيام السنة</string>
+    <string name="event_mawlid">المولد النبوي</string>
+    <string name="event_mawlid_desc">ذكرى مولد النبي صلى الله عليه وسلم</string>
+    <string name="event_isra_miraj">الإسراء والمعراج</string>
+    <string name="event_isra_miraj_desc">ذكرى الإسراء والمعراج</string>
+    <string name="event_ramadan">بداية رمضان</string>
+    <string name="event_ramadan_desc">بداية شهر الصيام المبارك</string>
+    <string name="event_laylat_al_qadr">ليلة القدر</string>
+    <string name="event_laylat_al_qadr_desc">الأرجح أنها في ليالي الوتر</string>
+    <string name="event_laylat_al_qadr_date">ليالي الوتر</string>
+    <string name="event_eid_al_fitr">عيد الفطر</string>
+    <string name="event_eid_al_fitr_desc">عيد الفطر المبارك</string>
+    <string name="event_hajj_start">بداية موسم الحج</string>
+    <string name="event_hajj_start_desc">بداية شهر ذي الحجة</string>
+    <string name="event_arafah">يوم عرفة</string>
+    <string name="event_arafah_desc">يوم وقفة عرفات</string>
+    <string name="event_eid_al_adha">عيد الأضحى</string>
+    <string name="event_eid_al_adha_desc">عيد الأضحى المبارك</string>
+
+    <!-- Weekdays -->
+    <string name="day_sun">ح</string>
+    <string name="day_mon">ن</string>
+    <string name="day_tue">ث</string>
+    <string name="day_wed">ر</string>
+    <string name="day_thu">خ</string>
+    <string name="day_fri">ج</string>
+    <string name="day_sat">س</string>
     
     <!-- Common -->
     <string name="loading">جاري التحميل…</string>
@@ -71,6 +131,25 @@
     <string name="save">حفظ</string>
     <string name="cancel">إلغاء</string>
     <string name="back_button">رجوع</string>
+
+    <!-- Sunnah Checklist -->
+    <string name="sunnah_checklist">قائمة السنن اليومية</string>
+    <string name="sunnah_daily">يومية</string>
+    <string name="sunnah_weekly">أسبوعية</string>
+    <string name="sunnah_monthly">شهرية</string>
+    <string name="sunnah_siwak_title">السواك</string>
+    <string name="sunnah_siwak_desc">استعمال السواك عند كل صلاة</string>
+    <string name="sunnah_duha_title">صلاة الضحى</string>
+    <string name="sunnah_duha_desc">صلاة ركعتين إلى ثمان في وقت الضحى</string>
+    <string name="sunnah_witr_title">صلاة الوتر</string>
+    <string name="sunnah_witr_desc">ختم صلاة الليل بالوتر</string>
+    <string name="sunnah_kahf_title">سورة الكهف</string>
+    <string name="sunnah_kahf_desc">قراءة سورة الكهف يوم الجمعة</string>
+    <string name="sunnah_white_days_title">صيام الأيام البيض</string>
+    <string name="sunnah_white_days_desc">صيام 13، 14، 15 من الشهر الهجري</string>
+    <string name="sunnah_adhkar_after_prayer_title">أذكار بعد الصلاة</string>
+    <string name="sunnah_adhkar_after_prayer_desc">المحافظة على الأذكار المسنونة بعد الصلاة</string>
+    <string name="sunnah_completed_message">عمل رائع! استمر في إحياء السنن.</string>
     
     <!-- Quran Index -->
     <string name="tab_surah">السور</string>
@@ -118,9 +197,6 @@
     <string name="notification_qiyam_title">قيام الليل</string>
     <string name="notification_qiyam_body">حان وقت صلاة القيام</string>
     <string name="stop_sound">إيقاف</string>
-    <string name="overlay_permission_title">الإذن مطلوب</string>
-    <string name="overlay_permission_desc">لعرض تنبيهات أوقات الصلاة وقيام الليل أثناء إغلاق التطبيق، يحتاج السبيل إلى إذن \'الظهور فوق التطبيقات الأخرى\'. يسمح هذا للتنبيه بالظهور على شاشتك عند حلول وقت الصلاة.</string>
-    <string name="overlay_permission_settings_hint">اضغط هنا لتفعيل \'الظهور فوق التطبيقات الأخرى\' ليتم عرض التنبيهات.</string>
     <string name="open_settings">فتح الإعدادات</string>
     
     <!-- Welcome Message -->
@@ -128,4 +204,27 @@
     <string name="welcome_test_mode_desc">شكراً لتثبيتك تطبيق السبيل! يرجى الملاحظة أن هذا التطبيق لا يزال في مرحلة تجريبية.\n\nإذا واجهت أي مشاكل، أو أردت تقديم ملاحظات، أو أردت المساهمة في التطوير، يمكنك العثور على مشروعنا المفتوح المصدر على منصة GitHub.</string>
     <string name="open_github">فتح GitHub</string>
     <string name="got_it">حسناً</string>
+    <string name="exact_alarm_permission_needed">يرجى السماح بـ "المنبهات والتذكيرات" لضمان عمل منبه قيام الليل في وقته بدقة.</string>
+
+    <!-- Khatmah Planner -->
+    <string name="khatmah_planner">مخطط الختمة</string>
+    <string name="khatmah_set_goal">حدد هدفاً لختم القرآن</string>
+    <string name="khatmah_target">الهدف:</string>
+    <string name="khatmah_days">%d يوم</string>
+    <string name="khatmah_pages_per_day">~%d صفحة يومياً</string>
+    <string name="khatmah_start">ابدأ الختمة</string>
+    <string name="khatmah_cancel">إلغاء الختمة</string>
+    <string name="khatmah_cancel_confirm">هل أنت متأكد من إلغاء الختمة الحالية؟ سيتم فقدان كل التقدم.</string>
+    <string name="khatmah_today_target">هدف اليوم</string>
+    <string name="khatmah_page_num">صفحة %d</string>
+    <string name="khatmah_remaining">المتبقي</string>
+    <string name="khatmah_done">تم </string>
+    <string name="khatmah_pages_left">%d صفحة</string>
+    <string name="khatmah_total_progress">التقدم الكلي</string>
+    <string name="khatmah_continue">أكمل القراءة</string>
+    <string name="khatmah_read_ahead">تابع القراءة</string>
+    <string name="khatmah_reminder">تذكير يومي</string>
+    <string name="khatmah_reminder_desc">تلقّ إشعاراً يومياً لقراءة صفحاتك من القرآن</string>
+    <string name="khatmah_reminder_notif_title">تذكير الختمة 📖</string>
+    <string name="khatmah_reminder_notif_body">حان وقت قراءة صفحاتك اليومية من القرآن!</string>
 </resources>
