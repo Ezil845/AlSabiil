@@ -235,6 +235,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun updateQuranFontSizeMultiplier(multiplier: Float) {
+        viewModelScope.launch {
+            settingsManager.updateQuranFontSizeMultiplier(multiplier)
+        }
+    }
+
     private fun rescheduleWithUpdatedSettings() {
         viewModelScope.launch {
             val currentSettings = settingsManager.settingsFlow.first()

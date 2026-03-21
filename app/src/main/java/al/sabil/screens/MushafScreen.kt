@@ -20,6 +20,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import al.sabil.R
 import al.sabil.components.MushafPage
 import al.sabil.components.QuranIndexModal
@@ -34,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import al.sabil.viewmodel.SettingsViewModel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.BookOpen
+import com.composables.icons.lucide.Type
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -69,6 +71,7 @@ fun MushafScreen(
     val coroutineScope = rememberCoroutineScope()
     var showIndex by remember { mutableStateOf(false) }
     var showBookmarks by remember { mutableStateOf(false) }
+    var showFontSizeSheet by remember { mutableStateOf(false) }
     var isRestored by remember { mutableStateOf(false) }
 
     val currentPage by remember {
@@ -145,6 +148,18 @@ fun MushafScreen(
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
+                                onClick = { showFontSizeSheet = true },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Lucide.Type,
+                                    contentDescription = "Text Size",
+                                    tint = primaryColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            IconButton(
                                 onClick = { showBookmarks = !showBookmarks },
                                 modifier = Modifier.size(32.dp)
                             ) {
@@ -213,6 +228,7 @@ fun MushafScreen(
                             ayahs = ayahs,
                             bookmarkedAyahs = bookmarkedAyahs,
                             isDarkMode = isDarkMode,
+                            fontSizeMultiplier = userSettings?.quranFontSizeMultiplier ?: 1.0f,
                             onAyahClick = { ayah ->
                                 currentAyah = ayah
                                 selectedAyahForTafseer = ayah
@@ -299,6 +315,53 @@ fun MushafScreen(
                     }
                 }
             )
+        }
+
+        if (showFontSizeSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showFontSizeSheet = false },
+                containerColor = backgroundColor,
+                dragHandle = { BottomSheetDefaults.DragHandle() }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Text Size",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (isDarkMode) Color.White else Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("A", fontSize = 14.sp, color = primaryColor)
+                        Slider(
+                            value = userSettings?.quranFontSizeMultiplier ?: 1.0f,
+                            onValueChange = { newValue ->
+                                settingsViewModel.updateQuranFontSizeMultiplier(newValue)
+                            },
+                            valueRange = 0.8f..1.5f,
+                            steps = 6,
+                            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+                            colors = SliderDefaults.colors(
+                                thumbColor = primaryColor,
+                                activeTrackColor = primaryColor,
+                                inactiveTrackColor = primaryColor.copy(alpha = 0.3f)
+                            )
+                        )
+                        Text("A", fontSize = 24.sp, color = primaryColor)
+                    }
+                }
+            }
         }
     }
 }

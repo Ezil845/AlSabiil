@@ -46,8 +46,7 @@ class SettingsManager(private val context: Context) {
         val KHATMAH_CURRENT_PAGE = intPreferencesKey("khatmah_current_page")
         val KHATMAH_ACTIVE = booleanPreferencesKey("khatmah_active")
         val KHATMAH_REMINDER = booleanPreferencesKey("khatmah_reminder")
-
-
+        val QURAN_FONT_SIZE_MULTIPLIER = floatPreferencesKey("quran_font_size_multiplier")
     }
 
     val settingsFlow: Flow<UserSettings> = context.dataStore.data.map { preferences ->
@@ -79,7 +78,8 @@ class SettingsManager(private val context: Context) {
             khatmahStartMillis = preferences[KHATMAH_START_MILLIS] ?: 0L,
             khatmahCurrentPage = preferences[KHATMAH_CURRENT_PAGE] ?: 1,
             khatmahActive = preferences[KHATMAH_ACTIVE] ?: false,
-            khatmahReminderEnabled = preferences[KHATMAH_REMINDER] ?: false
+            khatmahReminderEnabled = preferences[KHATMAH_REMINDER] ?: false,
+            quranFontSizeMultiplier = preferences[QURAN_FONT_SIZE_MULTIPLIER] ?: 1.0f
         )
     }
 
@@ -205,7 +205,11 @@ class SettingsManager(private val context: Context) {
             settings[KHATMAH_CURRENT_PAGE] = page
         }
     }
-
+    suspend fun updateQuranFontSizeMultiplier(multiplier: Float) {
+        context.dataStore.edit { settings ->
+            settings[QURAN_FONT_SIZE_MULTIPLIER] = multiplier
+        }
+    }
 
 }
 
@@ -237,5 +241,6 @@ data class UserSettings(
     val khatmahStartMillis: Long,
     val khatmahCurrentPage: Int,
     val khatmahActive: Boolean,
-    val khatmahReminderEnabled: Boolean
+    val khatmahReminderEnabled: Boolean,
+    val quranFontSizeMultiplier: Float
 )

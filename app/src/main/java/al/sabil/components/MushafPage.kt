@@ -28,13 +28,14 @@ fun MushafPage(
     ayahs: List<Ayah>,
     bookmarkedAyahs: Set<Pair<Int, Int>> = emptySet(),
     isDarkMode: Boolean = false,
+    fontSizeMultiplier: Float = 1.0f,
     onAyahClick: (Ayah) -> Unit
 ) {
     if (ayahs.isEmpty()) return
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val dynamicFontSize = (screenWidth.value * 0.055).sp
+    val dynamicFontSize = (screenWidth.value * 0.055 * fontSizeMultiplier).sp
     val dynamicLineHeight = dynamicFontSize * 1.8
 
     // Colors based on theme
