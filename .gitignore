@@ -1,3 +1,8 @@
+# ===== Documentation =====
+*.md
+!README.md
+!privacy.md
+
 # ===== Build artifacts =====
 /build/
 /app/build/

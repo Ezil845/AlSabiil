@@ -7,8 +7,11 @@ Welcome to the **AlSabiil App**. We are committed to protecting your privacy and
 ## 1. Information We Collect
 
 ### A. Location Data
-- **Why we need it:** AlSabiil requires access to your device's requested location (latitude and longitude) to accurately calculate accurate prayer times (Adhan) based on your global geographical position.
-- **How it's used:** Your location coordinates are processed entirely locally on your device to determine correct solar positions. We cache this data offline so the app continues to function seamlessly without a constant internet connection.
+- **Why we need it:** AlSabiil requires access to your device's location (latitude and longitude) to accurately calculate prayer times (Adhan) based on your geographic position and to automatically display your current city name.
+- **How it's used:** 
+    - **Prayer Calculation:** Your location coordinates are processed locally on your device to determine correct solar positions.
+    - **City Lookup (Reverse Geocoding):** To display your city name, the app sends your latitude and longitude coordinates via a secure HTTPS request to the OpenStreetMap (Nominatim) service. This is the only instance where location data is transmitted off your device.
+- **Data Retention:** We cache your last known location and city name locally on your device to ensure the app remains functional offline. We do not store this data on our own servers.
 
 ### B. App Settings & Preferences
 - **Why we need it:** We save your preferences such as configured prayer calculation methods, preferred notification sounds, bookmarked Quran ayahs, and last-read statuses.
@@ -16,8 +19,8 @@ Welcome to the **AlSabiil App**. We are committed to protecting your privacy and
 
 ## 2. How Your Data Is Processed
 
-- **100% On-Device Processing:** All data necessary for configuring alarms, displaying calculating prayer times, fetching localized information, and tracking bookmarks is generated and kept locally on your phone.
-- **No External Servers:** We **do not** transmit your location data, settings, or personal preferences to external servers or developer databases. Even notification management routines are executed natively using built-in Android Broadcasts and Alarm Managers.
+- **Localized Core Processing:** The vast majority of data—including alarm configurations, prayer time calculations, and bookmarks—is generated and kept locally on your phone.
+- **Minimal External Transmission:** We do not maintain a central database or user accounts. The only external transmission of data occurs during the city name lookup described above, which is sent directly to the OpenStreetMap service via encrypted HTTPS. No personally identifiable information (PII) is attached to these requests.
 
 ## 3. Data Sharing and Third Parties
 
