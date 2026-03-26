@@ -1,6 +1,6 @@
 package al.sabil.model
 
-import al.sabil.data.BookmarkEntity
+import al.sabil.data.entity.BookmarkEntity
 
 data class Bookmark(
     val surahNumber: Int,

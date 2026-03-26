@@ -47,6 +47,9 @@
     <string name="test_adhan">Test Adhan Sound</string>
     <string name="test_notif_icon">Test Notification Icon</string>
     <string name="color_palette_title">COLOR PALETTE</string>
+    <string name="app_theme_style_title">APP THEME STYLE</string>
+    <string name="theme_modern">Modern (Refined)</string>
+    <string name="theme_classic">Classic (Original)</string>
     <string name="adhan_settings_title">ADHAN SETTINGS</string>
     <string name="force_adhan_silent">Play even in silent mode</string>
     <string name="use_system_volume">Use system volume</string>
@@ -60,6 +63,7 @@
     <string name="qiyam_alarm_desc">Alarm sound</string>
     <string name="default_time">Default (1h before Fajr)</string>
     <string name="test_alert_title">Test Visual Alert</string>
+    <string name="test_prayer_alert">Test Prayer Alert</string>
     <string name="hijri_adjustment_title">Hijri Date Adjustment</string>
     <string name="hijri_adjustment_desc">Select the number of days to add or subtract to match your local calendar sighting.</string>
     <string name="hijri_minus_two">-2</string>
@@ -78,6 +82,11 @@
     <string name="islamic_events">Islamic Events</string>
     <string name="no_events_month">No major events this month</string>
     <string name="select_month">Select Month</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_sacred_month">Sacred month</string>
+    <string name="calendar_ramadan">Ramadan</string>
+    <string name="calendar_jumuah">Jumu\'ah</string>
+    <string name="calendar_event">Event</string>
 
     <!-- Hijri Months -->
     <string name="hijri_month_1">Muharram</string>
@@ -182,6 +191,7 @@
     <!-- Mushaf Screen -->
     <string name="page_simple_label">Page %d</string>
     <string name="surah_ayah_format">Surah %1$s - Ayah %2$d</string>
+    <string name="text_size">Text Size</string>
     
     <!-- Extra -->
     <string name="surah_ayah_num">Surah %1$d, Ayah %2$d</string>

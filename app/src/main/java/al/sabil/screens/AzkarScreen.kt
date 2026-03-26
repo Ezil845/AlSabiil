@@ -16,24 +16,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import al.sabil.R
 import al.sabil.components.AzkarCard
 import al.sabil.repository.AzkarRepository
+import al.sabil.viewmodel.SettingsViewModel
 
 @Composable
 fun AzkarScreen(repository: AzkarRepository) {
-    val categories = remember { repository.getCategories() }
-    var selectedCategory by remember { mutableStateOf(categories.firstOrNull() ?: "") }
+    val categories by produceState<List<String>>(initialValue = emptyList(), repository) {
+        value = repository.getCategories()
+    }
+    var selectedCategory by remember { mutableStateOf("") }
     val athkarCounts = remember { mutableStateMapOf<String, Int>() }
+    
+    val settingsViewModel: SettingsViewModel = viewModel()
+    val userSettings by settingsViewModel.settings.collectAsState()
+    val isModern = userSettings?.appThemeStyle == "MODERN"
+
+    val OffWhite = Color(0xFFFAF7F0)
+    val DeepTeal = Color(0xFF1B5B5B)
+    val AntiqueGold = Color(0xFFD4AF37)
+    val DarkCharcoal = Color(0xFF1A2A2A)
+
+    LaunchedEffect(categories) {
+        if (selectedCategory.isEmpty() && categories.isNotEmpty()) {
+            selectedCategory = categories.first()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White) // Pure white for a modern clean look
+            .background(if (isModern) OffWhite else Color.White)
     ) {
         // Modern Header
         Column(
@@ -47,8 +67,9 @@ fun AzkarScreen(repository: AzkarRepository) {
                 text = stringResource(R.string.azkar_title),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1A202C),
+                    color = if (isModern) DeepTeal else Color(0xFF1A202C),
                     fontSize = 32.sp,
+                    fontFamily = if (isModern) FontFamily.Serif else null,
                     platformStyle = androidx.compose.ui.text.PlatformTextStyle(
                         includeFontPadding = true
                     )
@@ -66,7 +87,7 @@ fun AzkarScreen(repository: AzkarRepository) {
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFF70a080))
+                    .background(if (isModern) AntiqueGold else Color(0xFF70a080))
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -94,7 +115,7 @@ fun AzkarScreen(repository: AzkarRepository) {
                             .height(40.dp)
                             .clip(RoundedCornerShape(20.dp))
                             .clickable { selectedCategory = category },
-                        color = if (isSelected) Color(0xFF70a080) else Color(0xFFF1F5F9),
+                        color = if (isSelected) (if (isModern) DeepTeal else Color(0xFF70a080)) else (if (isModern) AntiqueGold.copy(alpha = 0.1f) else Color(0xFFF1F5F9)),
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Box(
@@ -105,8 +126,9 @@ fun AzkarScreen(repository: AzkarRepository) {
                                 text = categoryTitle,
                                 style = MaterialTheme.typography.labelLarge.copy(
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) Color.White else Color(0xFF718096),
-                                    fontSize = 13.sp
+                                    color = if (isSelected) (if (isModern) OffWhite else Color.White) else (if (isModern) DeepTeal else Color(0xFF718096)),
+                                    fontSize = 13.sp,
+                                    fontFamily = if (isModern) FontFamily.Serif else null
                                 )
                             )
                         }
@@ -121,7 +143,9 @@ fun AzkarScreen(repository: AzkarRepository) {
             label = "CategoryTransition",
             animationSpec = tween(durationMillis = 300)
         ) { targetCategory ->
-            val items = remember(targetCategory) { repository.getAzkarByCategory(targetCategory) }
+            val items by produceState<List<al.sabil.model.AzkarItem>>(initialValue = emptyList(), targetCategory, repository) {
+                value = if (targetCategory.isNotEmpty()) repository.getAzkarByCategory(targetCategory) else emptyList()
+            }
             
             LazyColumn(
                 modifier = Modifier

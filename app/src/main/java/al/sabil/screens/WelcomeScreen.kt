@@ -58,8 +58,12 @@ fun WelcomeScreen(
     var nextPrayerName by remember { mutableStateOf("--") }
     var countdown by remember { mutableStateOf("00:00:00") }
 
-    val backgroundColor = Color(0xFFFFFCF2) // Explicit Mushaf background
-    val primaryColor = MaterialTheme.colorScheme.primary
+    val isModern = userSettings?.appThemeStyle == "MODERN"
+
+    val backgroundColor = if (isModern) Color(0xFFF5F0E8) else Color(0xFFFFFCF2)
+    val deepTeal = Color(0xFF1B5B5B)
+    val antiqueGold = Color(0xFFD4AF37)
+    val darkCharcoal = Color(0xFF1A2A2A)
 
     // Calculate isMuted based on settings and next prayer
     // If notification is enabled (true), then isMuted is false.
@@ -191,10 +195,12 @@ fun WelcomeScreen(
                 .fillMaxSize()
                 .background(backgroundColor)
                 .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 100.dp), // Extra bottom padding for nav bar
+                .padding(top = if (isModern) 24.dp else 16.dp, start = if (isModern) 12.dp else 16.dp, end = if (isModern) 12.dp else 16.dp, bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+            if (!isModern) {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
             
             PrayerTimeCard(
                 nextPrayer = nextPrayerName,
@@ -206,12 +212,13 @@ fun WelcomeScreen(
                 onSettingsClick = onSettingsClick,
                 onCalendarClick = onCalendarClick,
                 hijriOffset = userSettings?.hijriOffset ?: 0,
-                showSunrise = userSettings?.sunriseNotif ?: false
+                showSunrise = userSettings?.sunriseNotif ?: false,
+                isModern = isModern
             )
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            AyahCard(contentList = ayahContent)
+            AyahCard(contentList = ayahContent, isModern = isModern)
         }
     }
 

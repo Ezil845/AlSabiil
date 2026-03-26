@@ -1,4 +1,4 @@
-package al.sabil.data
+package al.sabil.data.entity
 
 import androidx.room.Entity
 import androidx.room.Index

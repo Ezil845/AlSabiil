@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import al.sabil.data.SettingsManager
 import al.sabil.data.AppDatabase
-import al.sabil.data.BookmarkEntity
+import al.sabil.data.entity.BookmarkEntity
 import al.sabil.data.UserSettings
 import al.sabil.model.Bookmark
 import al.sabil.model.toBookmark
@@ -115,6 +115,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun updateTafseer(tafseer: String) {
         viewModelScope.launch {
             settingsManager.updateTafseer(tafseer)
+        }
+    }
+
+    fun updateAppThemeStyle(style: String) {
+        viewModelScope.launch {
+            settingsManager.updateAppThemeStyle(style)
         }
     }
 

@@ -47,6 +47,7 @@ class SettingsManager(private val context: Context) {
         val KHATMAH_ACTIVE = booleanPreferencesKey("khatmah_active")
         val KHATMAH_REMINDER = booleanPreferencesKey("khatmah_reminder")
         val QURAN_FONT_SIZE_MULTIPLIER = floatPreferencesKey("quran_font_size_multiplier")
+        val APP_THEME_STYLE = stringPreferencesKey("app_theme_style")
     }
 
     val settingsFlow: Flow<UserSettings> = context.dataStore.data.map { preferences ->
@@ -79,8 +80,15 @@ class SettingsManager(private val context: Context) {
             khatmahCurrentPage = preferences[KHATMAH_CURRENT_PAGE] ?: 1,
             khatmahActive = preferences[KHATMAH_ACTIVE] ?: false,
             khatmahReminderEnabled = preferences[KHATMAH_REMINDER] ?: false,
-            quranFontSizeMultiplier = preferences[QURAN_FONT_SIZE_MULTIPLIER] ?: 1.0f
+            quranFontSizeMultiplier = preferences[QURAN_FONT_SIZE_MULTIPLIER] ?: 1.0f,
+            appThemeStyle = preferences[APP_THEME_STYLE] ?: "MODERN"
         )
+    }
+
+    suspend fun updateAppThemeStyle(style: String) {
+        context.dataStore.edit { settings ->
+            settings[APP_THEME_STYLE] = style
+        }
     }
 
     suspend fun updateSelectedAdhan(adhan: String) {
@@ -242,5 +250,6 @@ data class UserSettings(
     val khatmahCurrentPage: Int,
     val khatmahActive: Boolean,
     val khatmahReminderEnabled: Boolean,
-    val quranFontSizeMultiplier: Float
+    val quranFontSizeMultiplier: Float,
+    val appThemeStyle: String
 )

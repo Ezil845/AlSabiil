@@ -445,6 +445,19 @@ fun SettingsScreen(
                 }
 */
 
+                item { SectionTitle(stringResource(R.string.app_theme_style_title)) }
+                item {
+                    SettingsCard {
+                        TafseerSelectionRow(stringResource(R.string.theme_modern), userSettings.appThemeStyle == "MODERN") {
+                            viewModel.updateAppThemeStyle("MODERN")
+                        }
+                        HorizontalDivider(color = Color(0xFFEEEEEE))
+                        TafseerSelectionRow(stringResource(R.string.theme_classic), userSettings.appThemeStyle == "CLASSIC") {
+                            viewModel.updateAppThemeStyle("CLASSIC")
+                        }
+                    }
+                }
+
                 item { SectionTitle(stringResource(R.string.color_palette_title)) }
                 item {
                     PaletteSelector(

@@ -71,6 +71,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -82,17 +84,18 @@ import android.content.Context
 import android.content.res.Configuration
 
 sealed class Screen(val route: String, val resourceId: Int, val icon: @Composable (Boolean) -> Unit) {
+    private val deepTeal = Color(0xFF1B5B5B)
     object Welcome : Screen("welcome", R.string.app_name, { isSelected -> 
-        Icon(Lucide.House, contentDescription = null, tint = if (isSelected) Color(0xFF70a080) else Color(0xFFa0b0a0)) 
+        Icon(Lucide.House, contentDescription = null, tint = if (isSelected) Color(0xFF1B5B5B) else Color.Gray) 
     })
     object Quran : Screen("quran", R.string.app_name, { isSelected -> 
-        Icon(Lucide.BookOpen, contentDescription = null, tint = if (isSelected) Color(0xFF70a080) else Color(0xFFa0b0a0)) 
+        Icon(Lucide.BookOpen, contentDescription = null, tint = if (isSelected) Color(0xFF1B5B5B) else Color.Gray) 
     })
     object Azkar : Screen("azkar", R.string.morning_azkar, { isSelected -> 
-        Icon(Lucide.LayoutList, contentDescription = null, tint = if (isSelected) Color(0xFF70a080) else Color(0xFFa0b0a0)) 
+        Icon(Lucide.LayoutList, contentDescription = null, tint = if (isSelected) Color(0xFF1B5B5B) else Color.Gray) 
     })
     object Qibla : Screen("qibla", R.string.qibla_direction, { isSelected -> 
-        Icon(Lucide.Compass, contentDescription = null, tint = if (isSelected) Color(0xFF70a080) else Color(0xFFa0b0a0)) 
+        Icon(Lucide.Compass, contentDescription = null, tint = if (isSelected) Color(0xFF1B5B5B) else Color.Gray) 
     })
     object SettingsTab : Screen("settings", R.string.settings, { isSelected -> 
         Icon(Lucide.Settings, contentDescription = null, tint = if (isSelected) Color(0xFF70a080) else Color(0xFFa0b0a0)) 
@@ -183,15 +186,19 @@ class MainActivity : ComponentActivity() {
                         val showBottomBar = items.any { it.route == currentDestination?.route } || isQuranScreen
                         
                         if (showBottomBar) {
+                            val deepTeal = Color(0xFF1B5B5B)
+                            val antiqueGold = Color(0xFFD4AF37)
+                            val parchment = Color(0xFFF5F0E8)
+
                             NavigationBar(
-                                containerColor = Color(0xFFFFFCF2), // Warm Cream
+                                containerColor = parchment,
                                 tonalElevation = 0.dp,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(64.dp) // Tighter height without labels
+                                    .height(72.dp)
                                     .border(
                                         width = 1.dp,
-                                        color = Color(0xFFd8e2d8), // Top border color
+                                        color = antiqueGold.copy(alpha = 0.3f),
                                         shape = androidx.compose.ui.graphics.RectangleShape
                                     ),
                                 windowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0)
@@ -204,14 +211,29 @@ class MainActivity : ComponentActivity() {
                                             it.route == screen.route 
                                         }
                                     } == true
+                                    
                                     NavigationBarItem(
-                                        icon = { screen.icon(isSelected) },
+                                        icon = { 
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Box(contentAlignment = Alignment.Center) {
+                                                    screen.icon(isSelected)
+                                                }
+                                                if (isSelected) {
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(4.dp)
+                                                            .background(deepTeal, CircleShape)
+                                                    )
+                                                }
+                                            }
+                                        },
                                         selected = isSelected,
                                         alwaysShowLabel = false,
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = Color(0xFF70a080), // Sage Green
-                                            unselectedIconColor = Color(0xFFa0b0a0), // Muted Sage
-                                            indicatorColor = Color.Transparent // No pill background
+                                            selectedIconColor = deepTeal,
+                                            unselectedIconColor = Color.Gray,
+                                            indicatorColor = Color.Transparent
                                         ),
                                         onClick = {
                                             navController.navigate(screen.route) {

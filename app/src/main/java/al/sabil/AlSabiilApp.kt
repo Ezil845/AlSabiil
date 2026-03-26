@@ -3,12 +3,18 @@ package al.sabil
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
+import al.sabil.data.AppDatabase
+import al.sabil.data.DatabaseSeeder
 import java.util.Locale
 
 class AlSabiilApp : Application() {
     override fun onCreate() {
         super.onCreate()
         forceArabicLocale(this)
+        
+        // Initialize database and start seeding
+        val database = AppDatabase.getInstance(this)
+        DatabaseSeeder.seedDatabase(this, database)
     }
 
     override fun attachBaseContext(base: Context) {

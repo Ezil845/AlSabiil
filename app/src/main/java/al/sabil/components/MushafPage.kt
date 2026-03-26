@@ -35,8 +35,13 @@ fun MushafPage(
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val dynamicFontSize = (screenWidth.value * 0.055 * fontSizeMultiplier).sp
-    val dynamicLineHeight = dynamicFontSize * 1.8
+
+    // Stable width-based calculation for consistency
+    val baseFontSize = (screenWidth.value * 0.055f * fontSizeMultiplier).sp
+    val dynamicLineHeight = baseFontSize * 1.8
+    
+    // Header size: proportional but capped to prevent crushing the text
+    val headerFontSize = (36 * fontSizeMultiplier).coerceIn(28.0f, 44.0f).sp
 
     // Colors based on theme
     val backgroundColor = if (isDarkMode) Color.Black else Color(0xFFFFFCF2)
@@ -74,9 +79,9 @@ fun MushafPage(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(backgroundColor)
-                .padding(horizontal = 8.dp, vertical = 24.dp)
+                .padding(horizontal = 12.dp, vertical = 24.dp)
         ) {
             surahGroups.forEach { group ->
                 // Surah Header
@@ -89,7 +94,7 @@ fun MushafPage(
                             text = "${getSurahGlyph(group.suraNo)} $surahLabel",
                             style = TextStyle(
                                 fontFamily = SurahNames,
-                                fontSize = 40.sp,
+                                fontSize = headerFontSize,
                                 color = primaryColor,
                                 textAlign = TextAlign.Center
                             ),
@@ -101,7 +106,7 @@ fun MushafPage(
                                 text = basmalah,
                                 style = TextStyle(
                                     fontFamily = HafsSmart,
-                                    fontSize = 22.sp,
+                                    fontSize = (baseFontSize.value * 0.9).sp,
                                     color = textColor,
                                     textAlign = TextAlign.Center
                                 ),
@@ -129,7 +134,7 @@ fun MushafPage(
                     text = annotatedString,
                     style = TextStyle(
                         fontFamily = HafsSmart,
-                        fontSize = dynamicFontSize,
+                        fontSize = baseFontSize,
                         lineHeight = dynamicLineHeight,
                         textAlign = TextAlign.Justify,
                         letterSpacing = 0.sp, 

@@ -2,6 +2,8 @@ package al.sabil.repository
 
 import android.content.Context
 import android.util.Log
+import al.sabil.data.AppDatabase
+import al.sabil.data.entity.AyahEntity
 import al.sabil.model.Ayah
 import al.sabil.model.JuzzInfo
 import al.sabil.model.SurahInfo
@@ -10,45 +12,37 @@ import kotlinx.serialization.json.*
 private const val TAG = "QuranRepository"
 
 class QuranRepository(private val context: Context) {
+    private val database = AppDatabase.getInstance(context)
+    private val ayahDao = database.ayahDao()
+    
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
     }
     
-    private val hafsData: List<Ayah> by lazy {
-        try {
-            context.assets.open("data/hafs_smart_v8.json").use { inputStream ->
-                val jsonString = inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-                val data = json.decodeFromString<List<Ayah>>(jsonString)
-                Log.d(TAG, "Loaded ${data.size} ayahs from JSON")
-                if (data.isNotEmpty()) {
-                    Log.d(TAG, "First ayah: ID=${data[0].id}, Text='${data[0].aya_text.take(30)}'")
-                }
-                data
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error loading Quran data: ${e.message}")
-            e.printStackTrace()
-            emptyList()
-        }
-    }
+    // Cache for Surahs and Juzz to avoid frequent DB hits for static lists
+    private var cachedSurahs: List<SurahInfo>? = null
+    private var cachedJuzz: List<JuzzInfo>? = null
 
-    init {
-        Log.d(TAG, "QuranRepository initialized")
-        Log.d(TAG, "First ayah text: '${hafsData.firstOrNull()?.aya_text?.take(30)}'")
-    }
-    
+    private fun AyahEntity.toDomain(): Ayah = Ayah(
+        id = id,
+        jozz = jozz,
+        sura_no = sura_no,
+        sura_name_en = sura_name_en,
+        sura_name_ar = sura_name_ar,
+        page = page,
+        line_start = line_start,
+        line_end = line_end,
+        aya_no = aya_no,
+        aya_text = aya_text,
+        aya_text_emlaey = aya_text_emlaey
+    )
+
     private var currentTafseerType: String? = null
     private var currentTafseerSurah: Int? = null
     private var tafseerData: Map<String, String> = emptyMap()
 
-    /**
-     * Loads tafseer data. 
-     * For "ibn_kathir", it loads specific surah files (split to avoid OOM).
-     * For other types (e.g., saddi), it loads the full file.
-     */
     private fun loadTafseer(type: String, sura: Int) {
-        // Optimization: Don't reload if we already have the data for this type (and surah if applicable)
         if (currentTafseerType == type) {
             if (type == "ibn_kathir") {
                 if (currentTafseerSurah == sura && tafseerData.isNotEmpty()) return
@@ -63,33 +57,17 @@ class QuranRepository(private val context: Context) {
             "data/ar-tafseer-al-saddi.json"
         }
         
-        Log.d(TAG, "Attempting to load tafseer: $type (Surah $sura) from $fileName")
-        
         try {
-            // Debug check: list files in directory
-            if (type == "ibn_kathir") {
-                val list = context.assets.list("tafseer/ar-tafseer-ibn-kathir")
-                Log.d(TAG, "Files in tafseer/ar-tafseer-ibn-kathir: ${list?.size ?: -1}. Example: ${list?.firstOrNull()}")
-            }
-
             val processedMap = mutableMapOf<String, String>()
             
             context.assets.open(fileName).use { inputStream ->
                 val jsonString = inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-                Log.d(TAG, "Loaded JSON string length: ${jsonString.length}. First 50 chars: '${jsonString.take(50)}'")
-                
-                // For Ibn Kathir, the split files are simple maps.
-                // For Saddi, it's a large map.
-                // Using lenient JsonElement parsing for robustness.
                 val root = json.parseToJsonElement(jsonString).jsonObject
-                Log.d(TAG, "Parsed root JSON object. Keys count: ${root.size}")
                 
-                // Ibn Kathir split files are simple maps: "ayah_number": "text"
                 if (type == "ibn_kathir") {
                     for ((key, value) in root) {
                         try {
                             if (value is JsonPrimitive && value.isString) {
-                                // Map "1" -> "1:1", "2" -> "1:2" etc.
                                 val compositeKey = "$sura:$key"
                                 processedMap[compositeKey] = value.content
                             }
@@ -97,12 +75,8 @@ class QuranRepository(private val context: Context) {
                             Log.w(TAG, "Skipping invalid entry in Ibn Kathir for key $key: ${e.message}")
                         }
                     }
-                    Log.d(TAG, "Parsed Ibn Kathir Surah $sura. Total ayahs: ${processedMap.size}")
                 } else {
-                    // For Saddi or others, use the existing references logic
-                    val tempMap = mutableMapOf<String, Any>() // Holds string or JsonObject
-                    
-                    // First pass: load everything into tempMap
+                    val tempMap = mutableMapOf<String, Any>()
                     for ((key, value) in root) {
                         try {
                             if (value is JsonObject) {
@@ -115,16 +89,12 @@ class QuranRepository(private val context: Context) {
                         }
                     }
     
-                    // Second pass: resolve and populate processedMap
                     for ((key, value) in tempMap) {
                         try {
                             var text = ""
-                            
                             if (value is JsonObject) {
                                 text = value["text"]?.jsonPrimitive?.content ?: ""
-                                // (No longer needed to check ayah_keys for ibn_kathir here as it's handled above)
                             } else if (value is String) {
-                                // It's a pointer to another key (e.g., "89:2" -> "89:1")
                                 var targetKey = value
                                 var attempts = 0
                                 while (attempts < 5) {
@@ -140,7 +110,6 @@ class QuranRepository(private val context: Context) {
                                     attempts++
                                 }
                             }
-                            
                             if (text.isNotEmpty()) {
                                 processedMap[key] = text
                             }
@@ -154,58 +123,65 @@ class QuranRepository(private val context: Context) {
             tafseerData = processedMap
             currentTafseerType = type
             currentTafseerSurah = sura
-            Log.d(TAG, "Successfully loaded $type (Surah $sura). Entries: ${tafseerData.size}. Key example: ${tafseerData.keys.firstOrNull()}")
         } catch (e: Exception) {
             Log.e(TAG, "Critical error loading $type from $fileName: ${e.message}")
-            e.printStackTrace()
-            // Don't clear data immediately if just one surah failed, but for safety:
             tafseerData = emptyMap()
             currentTafseerType = null
             currentTafseerSurah = null
         }
     }
 
-    private val pagesMap: Map<Int, List<Ayah>> by lazy {
-        hafsData.groupBy { it.page }
-    }
-
-    fun getPageData(pageNumber: Int): List<Ayah> {
-        return pagesMap[pageNumber] ?: emptyList()
+    suspend fun getPageData(pageNumber: Int): List<Ayah> {
+        return ayahDao.getAyahsByPage(pageNumber).map { it.toDomain() }
     }
 
     fun getTafseer(sura: Int, aya: Int, type: String): String {
         loadTafseer(type, sura)
         val key = "$sura:$aya"
         val result = tafseerData[key]
-        Log.d(TAG, "getTafseer: sura=$sura, aya=$aya, type=$type, key=$key, found=${result != null}")
         return result ?: "No Tafseer available for $key ($type)."
     }
 
-    fun getSurahNameByPage(pageNumber: Int): String {
+    suspend fun getSurahNameByPage(pageNumber: Int): String {
         return getPageData(pageNumber).firstOrNull()?.sura_name_ar ?: ""
     }
 
-    fun getJuzzByPage(pageNumber: Int): Int {
+    suspend fun getJuzzByPage(pageNumber: Int): Int {
         return getPageData(pageNumber).firstOrNull()?.jozz ?: 1
     }
 
-    fun getAllSurahs(): List<SurahInfo> {
-        return hafsData.distinctBy { it.sura_no }.map {
-            SurahInfo(
-                number = it.sura_no,
-                nameEn = it.sura_name_en,
-                nameAr = it.sura_name_ar,
-                startPage = it.page
-            )
-        }
+    suspend fun getAllSurahs(): List<SurahInfo> {
+        if (cachedSurahs != null) return cachedSurahs!!
+        val surahs = ayahDao.getAllAyahs()
+            .distinctBy { it.sura_no }
+            .map {
+                SurahInfo(
+                    number = it.sura_no,
+                    nameEn = it.sura_name_en,
+                    nameAr = it.sura_name_ar,
+                    startPage = it.page
+                )
+            }
+        cachedSurahs = surahs
+        return surahs
     }
 
-    fun getAllJuzz(): List<JuzzInfo> {
-        return hafsData.distinctBy { it.jozz }.map {
-            JuzzInfo(
-                number = it.jozz,
-                startPage = it.page
-            )
-        }
+    suspend fun getAllJuzz(): List<JuzzInfo> {
+        if (cachedJuzz != null) return cachedJuzz!!
+        val juzz = ayahDao.getAllAyahs()
+            .distinctBy { it.jozz }
+            .map {
+                JuzzInfo(
+                    number = it.jozz,
+                    startPage = it.page
+                )
+            }
+        cachedJuzz = juzz
+        return juzz
+    }
+
+    suspend fun searchAyahs(query: String): List<Ayah> {
+        if (query.isBlank()) return emptyList()
+        return ayahDao.searchAyahs(query).map { it.toDomain() }
     }
 }

@@ -1,5 +1,6 @@
-package al.sabil.data
+package al.sabil.data.dao
 
+import al.sabil.data.entity.BookmarkEntity
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

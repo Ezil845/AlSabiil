@@ -49,9 +49,29 @@ fun MushafScreen(
     val bookmarks by settingsViewModel.bookmarks.collectAsState()
 
     val isDarkMode = userSettings?.quranDarkMode ?: false
-    val backgroundColor = if (isDarkMode) Color.Black else Color(0xFFFFFCF2)
-    val topBarColor = if (isDarkMode) Color(0xFF121212) else Color(0xFFf3f6f3)
-    val primaryColor = if (isDarkMode) Color(0xFFD4AF37) else Color(0xFF70a080)
+    val isModern = userSettings?.appThemeStyle == "MODERN"
+    
+    val OffWhite = Color(0xFFFAF7F0)
+    val DeepTeal = Color(0xFF1B5B5B)
+    val AntiqueGold = Color(0xFFD4AF37)
+    
+    val backgroundColor = when {
+        isDarkMode -> Color.Black
+        isModern -> OffWhite
+        else -> Color(0xFFFFFCF2)
+    }
+    
+    val topBarColor = when {
+        isDarkMode -> Color(0xFF121212)
+        isModern -> OffWhite
+        else -> Color(0xFFf3f6f3)
+    }
+    
+    val primaryColor = when {
+        isDarkMode -> AntiqueGold
+        isModern -> DeepTeal
+        else -> Color(0xFF70a080)
+    }
 
     // Ensure system bars are handled
     LaunchedEffect(Unit) {
@@ -105,17 +125,26 @@ fun MushafScreen(
     var selectedAyahForTafseer by remember { mutableStateOf<Ayah?>(null) }
     var currentAyah by remember { mutableStateOf<Ayah?>(null) }
 
-    val surahs = remember(repository) { repository.getAllSurahs() }
-    val juzzs = remember(repository) { repository.getAllJuzz() }
+    val surahs by produceState<List<al.sabil.model.SurahInfo>>(initialValue = emptyList(), repository) {
+        value = repository.getAllSurahs()
+    }
+    val juzzs by produceState<List<al.sabil.model.JuzzInfo>>(initialValue = emptyList(), repository) {
+        value = repository.getAllJuzz()
+    }
 
     var showKhatmahSheet by remember { mutableStateOf(false) }
+
+    var surahName by remember { mutableStateOf("") }
+    var juzzNumber by remember { mutableIntStateOf(1) }
+
+    LaunchedEffect(currentPage) {
+        surahName = repository.getSurahNameByPage(currentPage)
+        juzzNumber = repository.getJuzzByPage(currentPage)
+    }
 
     Scaffold(
         containerColor = backgroundColor,
         topBar = {
-            val surahName = repository.getSurahNameByPage(currentPage)
-            val juzz = repository.getJuzzByPage(currentPage)
-
             Column {
                 Surface(
                     modifier = Modifier
@@ -133,7 +162,7 @@ fun MushafScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.juzz_num, juzz),
+                            text = stringResource(R.string.juzz_num, juzzNumber),
                             style = MaterialTheme.typography.bodyMedium,
                             color = primaryColor,
                             fontWeight = FontWeight.SemiBold
@@ -145,6 +174,7 @@ fun MushafScreen(
                             color = primaryColor,
                             fontWeight = FontWeight.Bold
                         )
+// ... rest of the topBar ...
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
@@ -153,7 +183,7 @@ fun MushafScreen(
                             ) {
                                 Icon(
                                     imageVector = Lucide.Type,
-                                    contentDescription = "Text Size",
+                                    contentDescription = stringResource(R.string.text_size),
                                     tint = primaryColor,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -220,34 +250,18 @@ fun MushafScreen(
             ) {
                 items(totalPages) { pageIndex ->
                     val pageNumber = pageIndex + 1
-                    val ayahs = repository.getPageData(pageNumber)
-
-                    if (ayahs.isNotEmpty()) {
-                        MushafPage(
-                            pageNumber = pageNumber,
-                            ayahs = ayahs,
-                            bookmarkedAyahs = bookmarkedAyahs,
-                            isDarkMode = isDarkMode,
-                            fontSizeMultiplier = userSettings?.quranFontSizeMultiplier ?: 1.0f,
-                            onAyahClick = { ayah ->
-                                currentAyah = ayah
-                                selectedAyahForTafseer = ayah
-                            }
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(600.dp)
-                                .background(backgroundColor),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.page_simple_label, pageNumber),
-                                color = Color.Gray
-                            )
+                    AsyncMushafPage(
+                        pageNumber = pageNumber,
+                        repository = repository,
+                        bookmarkedAyahs = bookmarkedAyahs,
+                        isDarkMode = isDarkMode,
+                        fontSizeMultiplier = userSettings?.quranFontSizeMultiplier ?: 1.0f,
+                        backgroundColor = backgroundColor,
+                        onAyahClick = { ayah ->
+                            currentAyah = ayah
+                            selectedAyahForTafseer = ayah
                         }
-                    }
+                    )
                 }
             }
 
@@ -277,24 +291,27 @@ fun MushafScreen(
                 }
             }
         }
+    }
 
-        if (showIndex) {
-            QuranIndexModal(
-                surahs = surahs,
-                juzzs = juzzs,
-                settingsViewModel = settingsViewModel,
-                onSelectPage = { page ->
-                    coroutineScope.launch {
-                        lazyListState.scrollToItem(page - 1)
-                    }
-                },
-                onDismiss = { showIndex = false }
-            )
-        }
+    if (showIndex) {
+        QuranIndexModal(
+            surahs = surahs,
+            juzzs = juzzs,
+            settingsViewModel = settingsViewModel,
+            onSelectPage = { page ->
+                coroutineScope.launch {
+                    lazyListState.scrollToItem(page - 1)
+                }
+            },
+            onDismiss = { showIndex = false }
+        )
+    }
 
-        selectedAyahForTafseer?.let { ayah ->
-            val tafseerType = userSettings?.selectedTafseer ?: "saddi"
-            val tafseer = repository.getTafseer(ayah.sura_no, ayah.aya_no, tafseerType)
+    selectedAyahForTafseer?.let { ayah ->
+        val tafseerType = userSettings?.selectedTafseer ?: "saddi"
+        produceState<String>(initialValue = "Loading...", ayah, tafseerType) {
+            value = repository.getTafseer(ayah.sura_no, ayah.aya_no, tafseerType)
+        }.value.let { tafseer ->
             TafseerModal(
                 ayah = ayah,
                 tafseerText = tafseer,
@@ -302,66 +319,109 @@ fun MushafScreen(
                 onDismiss = { selectedAyahForTafseer = null }
             )
         }
+    }
 
-        if (showKhatmahSheet) {
-            al.sabil.components.KhatmahBottomSheet(
-                userSettings = userSettings,
-                settingsViewModel = settingsViewModel,
-                isDarkMode = isDarkMode,
-                onDismiss = { showKhatmahSheet = false },
-                onKhatmahStarted = {
-                    coroutineScope.launch {
-                        lazyListState.scrollToItem(0) // Scroll to page 1
-                    }
+    if (showKhatmahSheet) {
+        al.sabil.components.KhatmahBottomSheet(
+            userSettings = userSettings,
+            settingsViewModel = settingsViewModel,
+            isDarkMode = isDarkMode,
+            onDismiss = { showKhatmahSheet = false },
+            onKhatmahStarted = {
+                coroutineScope.launch {
+                    lazyListState.scrollToItem(0) // Scroll to page 1
                 }
-            )
-        }
+            }
+        )
+    }
 
-        if (showFontSizeSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showFontSizeSheet = false },
-                containerColor = backgroundColor,
-                dragHandle = { BottomSheetDefaults.DragHandle() }
+    if (showFontSizeSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFontSizeSheet = false },
+            containerColor = backgroundColor,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .padding(bottom = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Text(
+                    text = stringResource(R.string.text_size),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (isDarkMode) Color.White else Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "Text Size",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (isDarkMode) Color.White else Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("A", fontSize = 14.sp, color = primaryColor)
-                        Slider(
-                            value = userSettings?.quranFontSizeMultiplier ?: 1.0f,
-                            onValueChange = { newValue ->
-                                settingsViewModel.updateQuranFontSizeMultiplier(newValue)
-                            },
-                            valueRange = 0.8f..1.5f,
-                            steps = 6,
-                            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
-                            colors = SliderDefaults.colors(
-                                thumbColor = primaryColor,
-                                activeTrackColor = primaryColor,
-                                inactiveTrackColor = primaryColor.copy(alpha = 0.3f)
-                            )
+                    Text("A", fontSize = 14.sp, color = primaryColor)
+                    Slider(
+                        value = userSettings?.quranFontSizeMultiplier ?: 1.0f,
+                        onValueChange = { newValue ->
+                            settingsViewModel.updateQuranFontSizeMultiplier(newValue)
+                        },
+                        valueRange = 0.8f..1.5f,
+                        steps = 6,
+                        modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = primaryColor,
+                            activeTrackColor = primaryColor,
+                            inactiveTrackColor = primaryColor.copy(alpha = 0.3f)
                         )
-                        Text("A", fontSize = 24.sp, color = primaryColor)
-                    }
+                    )
+                    Text("A", fontSize = 24.sp, color = primaryColor)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AsyncMushafPage(
+    pageNumber: Int,
+    repository: QuranRepository,
+    bookmarkedAyahs: Set<Pair<Int, Int>>,
+    isDarkMode: Boolean,
+    fontSizeMultiplier: Float,
+    backgroundColor: Color,
+    onAyahClick: (Ayah) -> Unit
+) {
+    var ayahs by remember { mutableStateOf<List<Ayah>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(pageNumber, repository) {
+        ayahs = repository.getPageData(pageNumber)
+        isLoading = false
+    }
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(600.dp)
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.page_simple_label, pageNumber),
+                color = Color.Gray
+            )
+        }
+    } else if (ayahs.isNotEmpty()) {
+        MushafPage(
+            pageNumber = pageNumber,
+            ayahs = ayahs,
+            bookmarkedAyahs = bookmarkedAyahs,
+            isDarkMode = isDarkMode,
+            fontSizeMultiplier = fontSizeMultiplier,
+            onAyahClick = onAyahClick
+        )
     }
 }
