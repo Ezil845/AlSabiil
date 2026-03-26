@@ -48,8 +48,8 @@
     <string name="test_notif_icon">Test Notification Icon</string>
     <string name="color_palette_title">COLOR PALETTE</string>
     <string name="app_theme_style_title">APP THEME STYLE</string>
-    <string name="theme_modern">Modern (Refined)</string>
-    <string name="theme_classic">Classic (Original)</string>
+    <string name="theme_modern">راقي</string>
+    <string name="theme_classic">Classic</string>
     <string name="adhan_settings_title">ADHAN SETTINGS</string>
     <string name="force_adhan_silent">Play even in silent mode</string>
     <string name="use_system_volume">Use system volume</string>

@@ -458,12 +458,14 @@ fun SettingsScreen(
                     }
                 }
 
-                item { SectionTitle(stringResource(R.string.color_palette_title)) }
-                item {
-                    PaletteSelector(
-                        selected = userSettings.selectedPalette,
-                        onSelect = { viewModel.updatePalette(it) }
-                    )
+                if (userSettings.appThemeStyle == "CLASSIC") {
+                    item { SectionTitle(stringResource(R.string.color_palette_title)) }
+                    item {
+                        PaletteSelector(
+                            selected = userSettings.selectedPalette,
+                            onSelect = { viewModel.updatePalette(it) }
+                        )
+                    }
                 }
 
                 item { SectionTitle(stringResource(R.string.tafseer_title)) }
@@ -736,9 +738,7 @@ fun PaletteSelector(selected: String, onSelect: (String) -> Unit) {
         "emerald" to Color(0xFF059669),
         "dark_emerald" to Color(0xFF022C22),
         "black" to Color(0xFF1F2937),
-        "teal" to Color(0xFF0D9488),
-        "indigo" to Color(0xFF4F46E5),
-        "gold" to Color(0xFFD97706)
+        "teal" to Color(0xFF0D9488)
     )
 
     LazyRow(

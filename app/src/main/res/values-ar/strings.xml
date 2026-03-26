@@ -47,8 +47,8 @@
     <string name="test_notif_icon">اختبار أيقونة الإشعارات</string>
     <string name="color_palette_title">ألوان التطبيق</string>
     <string name="app_theme_style_title">نمط مظهر التطبيق</string>
-    <string name="theme_modern">حديث (راقي)</string>
-    <string name="theme_classic">كلاسيكي (الأصلي)</string>
+    <string name="theme_modern">راقي</string>
+    <string name="theme_classic">Classic</string>
     <string name="adhan_settings_title">إعدادات الأذان</string>
     <string name="force_adhan_silent">التشغيل حتى في الوضع الصامت</string>
     <string name="use_system_volume">استخدام مستوى صوت النظام</string>

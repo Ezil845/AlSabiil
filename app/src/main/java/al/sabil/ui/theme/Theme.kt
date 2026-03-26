@@ -8,14 +8,12 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 
 enum class AppPalette {
-    EMERALD, BLACK, TEAL, INDIGO, GOLD, DARK_EMERALD;
+    EMERALD, BLACK, TEAL, DARK_EMERALD;
 
     companion object {
         fun fromId(id: String): AppPalette = when (id) {
             "black" -> BLACK
             "teal" -> TEAL
-            "indigo" -> INDIGO
-            "gold" -> GOLD
             "dark_emerald" -> DARK_EMERALD
             else -> EMERALD
         }
@@ -83,8 +81,6 @@ fun AlSabiilTheme(
         AppPalette.EMERALD -> EmeraldColorScheme
         AppPalette.BLACK -> RichBlackColorScheme
         AppPalette.TEAL -> DeepTealColorScheme
-        AppPalette.INDIGO -> DeepTealColorScheme 
-        AppPalette.GOLD -> ForestGreenColorScheme 
         AppPalette.DARK_EMERALD -> DarkEmeraldColorScheme
     }
 
